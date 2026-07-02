@@ -37,10 +37,11 @@ Grotesk only, square corners, hard rules not shadows, no accent hue, no emoji).
   are illustrative, confirm with client.
 - **4 — Equipment page** ✅ done: hero + 8-category price grid from
   equipment.json, verified 2px #1d201f borders / 0 radius / correct order.
-- **5 — Editing system:** PAUSED before starting — requires standing up a
-  new external service (OAuth proxy for a Decap/Sveltia-style admin UI, or
-  an alternative). Needs the client's explicit choice before creating any
-  new account/service.
+- **5 — Editing system** ✅ done: client chose to skip the admin-UI/OAuth
+  route (would've needed a new external service) and use GitHub's own web
+  file editor directly on `src/data/*.json`. Documented in `docs/EDITING.md`.
+  A form-based admin panel remains a viable later add-on if this gets
+  tedious — revisit only if asked.
 - **6 — Launch:** SEO/meta/structured data, analytics, a11y, DNS cutover.
   DO NOT START without explicit "site approved, go live" from the client.
 
