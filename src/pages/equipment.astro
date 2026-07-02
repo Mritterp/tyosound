@@ -5,10 +5,12 @@ import SiteFooter from '../components/SiteFooter.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import TextLink from '../components/TextLink.astro';
 import EquipmentCard from '../components/EquipmentCard.astro';
+import SEOHead from '../components/SEOHead.astro';
 import equipmentData from '../data/equipment.json';
 
 const base = import.meta.env.BASE_URL;
 const categories = [...equipmentData.categories].sort((a, b) => a.sortingOrder - b.sortingOrder);
+const description = 'Professional audio equipment for rent from TYO Sound — mixers, recorders, microphones, wireless, timecode, and sound reinforcement. Washington, D.C. and Baltimore.';
 ---
 
 <!doctype html>
@@ -16,16 +18,13 @@ const categories = [...equipmentData.categories].sort((a, b) => a.sortingOrder -
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Equipment Rental — TYO Sound</title>
-    <meta
-      name="description"
-      content="Professional audio equipment for rent from TYO Sound — mixers, recorders, microphones, wireless, timecode, and sound reinforcement. Washington, D.C. and Baltimore."
-    />
-    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <SEOHead title="Equipment Rental — TYO Sound" description={description} ogImage={`${base}/img/equipment-action.png`} />
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <NavHeader theme="light" active="Equipment" />
 
+    <main id="main">
     <section class="eq-hero">
       <div class="content eq-hero-grid">
         <div class="eq-hero-text">
@@ -49,12 +48,31 @@ const categories = [...equipmentData.categories].sort((a, b) => a.sortingOrder -
         </div>
       </div>
     </section>
+    </main>
 
     <SiteFooter />
 
     <style>
       body { margin: 0; font-family: var(--font-sans); background: var(--bg-page); }
       .content { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--page-gutter); }
+
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 100;
+        background: var(--white);
+        color: var(--black);
+        padding: var(--space-3) var(--space-5);
+        font-family: var(--font-sans);
+        font-weight: var(--weight-medium);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wide);
+      }
+      .skip-link:focus {
+        left: var(--space-4);
+        top: var(--space-4);
+      }
 
       .eq-hero { padding: var(--space-8) 0 var(--section-pad-y); }
       .eq-hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-8); align-items: center; }

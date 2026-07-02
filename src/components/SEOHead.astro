@@ -1,0 +1,32 @@
+---
+// TYO Sound — SEOHead
+// Shared <head> meta: title, description, canonical, Open Graph, Twitter
+// Card. Canonical/OG URLs derive from Astro.site + BASE_URL so the launch
+// DNS cutover (astro.config.mjs) is the only edit needed to retarget them.
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string; // absolute path under BASE_URL, e.g. `${base}/img/hero-dc-capitol.png`
+}
+const { title, description, ogImage } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = ogImage ? new URL(ogImage, Astro.site) : undefined;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+<link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="TYO Sound" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+{ogImageURL && <meta property="og:image" content={ogImageURL} />}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{ogImageURL && <meta name="twitter:image" content={ogImageURL} />}

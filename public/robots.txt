@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mritterp.github.io/tyosound/sitemap-index.xml

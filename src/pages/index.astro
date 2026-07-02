@@ -9,6 +9,7 @@ import ServiceColumn from '../components/ServiceColumn.astro';
 import TrustBar from '../components/TrustBar.astro';
 import FeaturedWorkItem from '../components/FeaturedWorkItem.astro';
 import InstagramGrid from '../components/InstagramGrid.astro';
+import SEOHead from '../components/SEOHead.astro';
 import projectsData from '../data/projects.json';
 
 const base = import.meta.env.BASE_URL;
@@ -42,6 +43,32 @@ const services = [
 
 const defaultCat = 'production';
 const firstOpenId = projects.find((p) => p.cat === defaultCat)?.id ?? projects[0].id;
+
+const description = 'TYO Sound — production sound, audio post, and events audio engineering in Washington, D.C. and Baltimore. Interviews, documentaries, film, and live events.';
+
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: 'TYO Sound',
+  description,
+  url: new URL(base + '/', Astro.site).toString(),
+  telephone: '+1-240-608-8286',
+  email: 'matt@tyosound.com',
+  areaServed: [
+    { '@type': 'City', name: 'Washington, D.C.' },
+    { '@type': 'City', name: 'Baltimore' },
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Washington',
+    addressRegion: 'DC',
+    addressCountry: 'US',
+  },
+  // No street address was in scope for this handoff — PostalAddress is
+  // deliberately locality-level only. Add streetAddress here if/when the
+  // client wants a precise service address surfaced to search engines.
+  sameAs: [],
+};
 ---
 
 <!doctype html>
@@ -49,16 +76,13 @@ const firstOpenId = projects.find((p) => p.cat === defaultCat)?.id ?? projects[0
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TYO Sound — Production + Events Audio Engineering</title>
-    <meta
-      name="description"
-      content="TYO Sound — production sound, audio post, and events audio engineering in Washington, D.C. and Baltimore. Interviews, documentaries, film, and live events."
-    />
-    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <SEOHead title="TYO Sound — Production + Events Audio Engineering" description={description} ogImage={`${base}/img/hero-dc-capitol.png`} />
+    <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero" id="main">
       <img class="hero-photo" src={`${base}/img/hero-dc-capitol.png`} alt="Washington, D.C. streetscape near the U.S. Capitol" />
       <div class="hero-scrim"></div>
       <div class="hero-header"><NavHeader theme="onPhoto" active="Work" /></div>
@@ -193,6 +217,24 @@ const firstOpenId = projects.find((p) => p.cat === defaultCat)?.id ?? projects[0
     <style>
       body { margin: 0; font-family: var(--font-sans); background: var(--bg-page); }
       .content { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--page-gutter); }
+
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 100;
+        background: var(--white);
+        color: var(--black);
+        padding: var(--space-3) var(--space-5);
+        font-family: var(--font-sans);
+        font-weight: var(--weight-medium);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wide);
+      }
+      .skip-link:focus {
+        left: var(--space-4);
+        top: var(--space-4);
+      }
 
       /* HERO */
       .hero { position: relative; min-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
