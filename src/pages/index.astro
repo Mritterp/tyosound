@@ -120,6 +120,7 @@ const localBusinessSchema = {
 
     <!-- FEATURED WORK -->
     <section class="featured-work" id="featured-work">
+      <canvas class="fw-static" data-tv-static aria-hidden="true"></canvas>
       <div class="content">
         <div class="fw-header">
           <h2 class="fw-title">Featured Work</h2>
@@ -227,6 +228,40 @@ const localBusinessSchema = {
       }
     </script>
 
+    <script>
+      // Analog-TV static behind Featured Work: draws random grayscale noise
+      // into a small offscreen-resolution canvas each frame, then lets CSS
+      // (image-rendering: pixelated) blow it up to full size for the
+      // blocky, low-fi "bad reception" look, instead of shipping a video file.
+      const staticCanvas = document.querySelector('[data-tv-static]');
+      if (staticCanvas instanceof HTMLCanvasElement) {
+        const ctx = staticCanvas.getContext('2d');
+        const NOISE_W = 160;
+        const NOISE_H = 90;
+        staticCanvas.width = NOISE_W;
+        staticCanvas.height = NOISE_H;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function drawFrame() {
+          if (!ctx) return;
+          const frame = ctx.createImageData(NOISE_W, NOISE_H);
+          for (let i = 0; i < frame.data.length; i += 4) {
+            const v = Math.random() * 255;
+            frame.data[i] = v;
+            frame.data[i + 1] = v;
+            frame.data[i + 2] = v;
+            frame.data[i + 3] = 255;
+          }
+          ctx.putImageData(frame, 0, 0);
+        }
+
+        drawFrame();
+        if (!reduceMotion) {
+          setInterval(drawFrame, 90);
+        }
+      }
+    </script>
+
     <style>
       body {
         margin: 0;
@@ -290,7 +325,24 @@ const localBusinessSchema = {
       .trust-wrap { margin-top: var(--space-6); padding-top: var(--space-5); border-top: 1px solid var(--border-inverse); }
 
       /* FEATURED WORK */
-      .featured-work { background: var(--bg-muted); padding: var(--section-gap-home) 0; }
+      .featured-work { position: relative; background: var(--bg-muted); padding: var(--section-gap-home) 0; overflow: hidden; }
+      .featured-work > .content { position: relative; z-index: 1; }
+      /* Analog-TV static behind the section — a new stylistic addition (the
+         real site has no video here, just a flat gray layer), built as a
+         small canvas upscaled with pixelated rendering rather than a video
+         file, so there's no asset to source or host. Kept low-opacity so
+         text stays legible; a static (non-animating) frame is drawn when
+         the visitor prefers reduced motion. */
+      .fw-static {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.06;
+        image-rendering: pixelated;
+        pointer-events: none;
+      }
       .fw-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
       /* Real size pulled from the live site's "home__featuredwork-header"
          style (2.85rem/-0.1rem) — this is a large display heading on the
