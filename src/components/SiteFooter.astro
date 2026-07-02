@@ -60,7 +60,6 @@ const {
       <a href={`mailto:${email}`} class="detail-row link">
         <Icon name="mail" size={18} />{email}
       </a>
-      <a href="#" aria-label="Instagram" class="ig-link"><Icon name="instagram" size={22} /></a>
     </div>
   </div>
 </footer>
@@ -173,8 +172,6 @@ const {
   .detail-row { display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.85); font-size: var(--text-body); }
   .detail-row.link { color: var(--white); text-decoration: none; transition: opacity var(--dur-fast); }
   .detail-row.link:hover { opacity: var(--hover-opacity); }
-  .ig-link { color: var(--white); margin-top: var(--space-2); width: max-content; transition: opacity var(--dur-fast); }
-  .ig-link:hover { opacity: var(--hover-opacity); }
 
   @media (max-width: 760px) {
     .grid { grid-template-columns: 1fr; gap: var(--space-7); }

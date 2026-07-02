@@ -20,7 +20,7 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
     <span class="text">
       <span class="title-row">
         <span class="title">{title}</span>
-        <span class="hoverwave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="hoverwave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
       </span>
       <span class="meta">{client}{role ? ` — ${role}` : ''}</span>
     </span>
@@ -43,7 +43,6 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
 </div>
 
 <style>
-  .row { border-top: 1px solid var(--border); }
   .row-head {
     width: 100%;
     background: none;
@@ -89,33 +88,42 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
      site's CSS, not invented, so it wins over that stated rule here. */
   .row-head:hover .title { color: #245486; font-weight: var(--weight-bold); }
 
+  /* Sized relative to the title so it scales down at the same breakpoints
+     — matched to the screenshot: taller relative to the text than the
+     first pass, 7 bars (not 5), rounded (pill) ends. */
   .hoverwave {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    height: 28px;
+    gap: 4px;
+    height: 54px;
     margin-left: var(--space-5);
     color: #245486;
     opacity: 0;
     transform: translateX(-8px);
     transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
   }
-  /* Square corners (no border-radius — matches the brand's square-corner
-     rule; the earlier rounded bars were a mistake). Each bar runs its OWN
+  @media (max-width: 991px) { .hoverwave { height: 32px; } }
+  @media (max-width: 767px) { .hoverwave { height: 24px; } }
+  @media (max-width: 479px) { .hoverwave { height: 17px; } }
+  /* Rounded (pill) ends, matching the original — each bar runs its OWN
      keyframes/duration/delay so they bounce independently rather than as
-     one synchronized ripple, matching the real site's feel more closely. */
-  .hoverwave i { display: block; width: 4px; background: currentColor; transform-origin: center; }
-  .hoverwave i:nth-child(1) { height: 30%; }
+     one synchronized ripple. */
+  .hoverwave i { display: block; width: 4px; border-radius: 999px; background: currentColor; transform-origin: center; }
+  .hoverwave i:nth-child(1) { height: 40%; }
   .hoverwave i:nth-child(2) { height: 65%; }
-  .hoverwave i:nth-child(3) { height: 100%; }
-  .hoverwave i:nth-child(4) { height: 50%; }
-  .hoverwave i:nth-child(5) { height: 75%; }
+  .hoverwave i:nth-child(3) { height: 85%; }
+  .hoverwave i:nth-child(4) { height: 100%; }
+  .hoverwave i:nth-child(5) { height: 80%; }
+  .hoverwave i:nth-child(6) { height: 55%; }
+  .hoverwave i:nth-child(7) { height: 35%; }
   .row-head:hover .hoverwave { opacity: 1; transform: translateX(0); }
   .row-head:hover .hoverwave i:nth-child(1) { animation: wave-a 0.62s ease-in-out infinite; }
   .row-head:hover .hoverwave i:nth-child(2) { animation: wave-b 0.83s ease-in-out infinite; }
   .row-head:hover .hoverwave i:nth-child(3) { animation: wave-c 0.71s ease-in-out infinite; }
   .row-head:hover .hoverwave i:nth-child(4) { animation: wave-d 0.95s ease-in-out infinite; }
   .row-head:hover .hoverwave i:nth-child(5) { animation: wave-e 0.68s ease-in-out infinite; }
+  .row-head:hover .hoverwave i:nth-child(6) { animation: wave-b 0.77s ease-in-out infinite; }
+  .row-head:hover .hoverwave i:nth-child(7) { animation: wave-c 0.9s ease-in-out infinite; }
   @keyframes wave-a { 0%, 100% { transform: scaleY(1); } 40% { transform: scaleY(0.35); } 70% { transform: scaleY(0.8); } }
   @keyframes wave-b { 0%, 100% { transform: scaleY(0.5); } 30% { transform: scaleY(1); } 65% { transform: scaleY(0.25); } }
   @keyframes wave-c { 0%, 100% { transform: scaleY(0.8); } 50% { transform: scaleY(0.3); } 80% { transform: scaleY(1); } }

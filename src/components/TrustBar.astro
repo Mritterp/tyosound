@@ -12,6 +12,11 @@ interface Client {
   // some marks (e.g. a near-square icon vs. a wide wordmark) read better
   // a bit larger/smaller at a shared row height — per-logo scale nudge.
   scale?: number;
+  // Logos that are already genuinely two-tone (e.g. ABC's black circle +
+  // white lowercase letters) need a plain color invert() to preserve that
+  // internal contrast — brightness(0) invert(1) crushes both tones to the
+  // same black first, erasing the letters entirely.
+  bitonal?: boolean;
 }
 interface Props {
   clients?: Client[];
@@ -24,9 +29,15 @@ const {
     { name: 'NBC', src: `${base}/img/logos/nbc.svg` },
     { name: 'VICE', src: `${base}/img/logos/vice.svg` },
     { name: 'HBO', src: `${base}/img/logos/hbo.svg` },
-    { name: 'ABC', src: `${base}/img/logos/abc.svg`, scale: 0.8 },
+    { name: 'ABC', src: `${base}/img/logos/abc.svg`, scale: 0.8, bitonal: true },
     { name: 'Netflix', src: `${base}/img/logos/netflix.svg`, scale: 1.1 },
     { name: 'CBS', src: `${base}/img/logos/cbs.svg` },
+    { name: 'PBS', src: `${base}/img/logos/pbs.svg`, bitonal: true },
+    { name: 'Kaiser Permanente', src: `${base}/img/logos/kaiser.svg`, scale: 1.3 },
+    // Blue Cross Blue Shield: no clean national-logo SVG found on Wikimedia
+    // Commons (only regional variants, e.g. Blue Shield of California) —
+    // holding off rather than guessing which entity/mark is right. Add a
+    // client entry here once a logo file is supplied.
   ],
   onLight = false,
   label,
@@ -39,6 +50,7 @@ const {
     {clients.map((c) => (
       <img
         class="client-logo"
+        data-bitonal={c.bitonal ? 'true' : undefined}
         src={c.src}
         alt={c.name}
         style={c.scale ? `--scale: ${c.scale}` : undefined}
@@ -69,5 +81,13 @@ const {
   .trust[data-on-light='true'] .client-logo {
     /* Forces pure black instead, for use on a light background. */
     filter: brightness(0);
+  }
+  /* Genuinely two-tone source logos: swap polarity instead of crushing to
+     one color, so internal contrast (e.g. ABC's letters) survives. */
+  .client-logo[data-bitonal='true'] {
+    filter: invert(1);
+  }
+  .trust[data-on-light='true'] .client-logo[data-bitonal='true'] {
+    filter: none;
   }
 </style>
