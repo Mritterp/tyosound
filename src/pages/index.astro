@@ -153,7 +153,7 @@ const localBusinessSchema = {
           is changed in the Elfsight dashboard this widget ID belongs to,
           not in this code.
         -->
-        <div class="ig-wrap">
+        <div class="ig-wrap" data-ig-wrap>
           <script src="https://apps.elfsight.com/p/platform.js" defer></script>
           <div class="elfsight-app-16dbe8d3-b603-489d-9068-3fd9ed8f416e"></div>
         </div>
@@ -229,10 +229,11 @@ const localBusinessSchema = {
       if (staticCanvas instanceof HTMLCanvasElement) {
         const ctx = staticCanvas.getContext('2d');
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        // Half the CSS pixel size keeps this fine-grained without doing a
-        // full devicePixelRatio-scaled fill every frame (still visually
-        // "very fine" static, just not literally 1:1 with physical pixels).
-        const RESOLUTION_SCALE = 0.5;
+        // Matches real device pixels (capped at 2x) for genuinely fine
+        // grain — bumped up from an earlier 0.5x pass that still looked
+        // blocky. Still cheap: it's a low-opacity decorative layer redrawn
+        // at ~11fps, not 60fps.
+        const RESOLUTION_SCALE = Math.min(window.devicePixelRatio || 1, 2);
         let w = 0;
         let h = 0;
 
@@ -266,6 +267,30 @@ const localBusinessSchema = {
         if (!reduceMotion) {
           setInterval(drawFrame, 90);
         }
+      }
+    </script>
+
+    <script>
+      // Hide the Elfsight free-tier attribution badge by matching its
+      // literal text rather than a guessed class/href — the earlier
+      // a[href*="elfsight.com"] CSS rule didn't catch it on the live site,
+      // and text matching is robust to however Elfsight marks it up.
+      // MutationObserver keeps watching since the widget (and "Load more")
+      // render content asynchronously.
+      const igWrap = document.querySelector('[data-ig-wrap]');
+      if (igWrap) {
+        const BADGE_TEXT = 'Free Instagram Feed Widget';
+        function hideBadge() {
+          const candidates = igWrap.querySelectorAll('a, button, div, span');
+          candidates.forEach((el) => {
+            if (el.children.length === 0 && el.textContent?.trim() === BADGE_TEXT) {
+              const target = el.closest('a') || el.parentElement || el;
+              target.style.display = 'none';
+            }
+          });
+        }
+        hideBadge();
+        new MutationObserver(hideBadge).observe(igWrap, { childList: true, subtree: true });
       }
     </script>
 
@@ -378,25 +403,20 @@ const localBusinessSchema = {
       /* Elfsight injects its own markup at runtime (real classes read from
          the live embed via devtools), so Astro's scoped CSS can't reach it
          — these need :global() and !important to beat the widget's own
-         inline styles. Adds a visible border + gutter around each tile. */
-      .ig-wrap :global(.eapps-instagram-feed-posts-item) {
-        border: 1px solid var(--border) !important;
-      }
+         inline styles/layout math. Forces a real fixed 4-column grid
+         (overriding Elfsight's own responsive column logic entirely) with
+         a gap that shrinks on narrower viewports, plus a border per tile. */
       .ig-wrap :global(.eapps-instagram-feed-posts-inner) {
-        margin: -10px !important;
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: clamp(4px, 1.8vw, 10px) !important;
+        width: 100% !important;
+        margin: 0 !important;
       }
       .ig-wrap :global(.eapps-instagram-feed-posts-item) {
-        margin: 10px !important;
-      }
-      /* Free-tier attribution badge. Didn't render in local dev (Elfsight
-         widgets often behave differently on localhost than the real
-         domain), so targeted by link destination rather than a guessed
-         class name — more robust either way, and client has done this
-         before and is fine with it. Verify on the live deploy that this
-         actually catches it; adjust the selector if Elfsight's markup
-         doesn't match this pattern. */
-      .ig-wrap :global(a[href*="elfsight.com"]) {
-        display: none !important;
+        width: auto !important;
+        margin: 0 !important;
+        border: 1px solid var(--border) !important;
       }
 
       @media (max-width: 760px) {

@@ -1,15 +1,33 @@
 ---
 // TYO Sound — TrustBar
-// Client/network wordmark row. Real brand marks weren't supplied — these
-// render as plain uppercase type (flagged substitution) until official
-// logos are licensed and swapped in.
+// Client/network logo row. Real official marks, sourced from Wikimedia
+// Commons (public-domain-status vector files, per each file's own page —
+// still trademarked, used here the same "worked with" factual way the
+// original site used them). Forced to solid monochrome via CSS filter
+// since the brand has no color system, regardless of each logo's real
+// intrinsic colors.
+interface Client {
+  name: string;
+  src: string;
+  // some marks (e.g. a near-square icon vs. a wide wordmark) read better
+  // a bit larger/smaller at a shared row height — per-logo scale nudge.
+  scale?: number;
+}
 interface Props {
-  clients?: string[];
+  clients?: Client[];
   onLight?: boolean;
   label?: string;
 }
+const base = import.meta.env.BASE_URL;
 const {
-  clients = ['NBC', 'VICE', 'HBO', 'ABC', 'Netflix', 'CBS'],
+  clients = [
+    { name: 'NBC', src: `${base}/img/logos/nbc.svg` },
+    { name: 'VICE', src: `${base}/img/logos/vice.svg` },
+    { name: 'HBO', src: `${base}/img/logos/hbo.svg` },
+    { name: 'ABC', src: `${base}/img/logos/abc.svg`, scale: 0.8 },
+    { name: 'Netflix', src: `${base}/img/logos/netflix.svg`, scale: 1.1 },
+    { name: 'CBS', src: `${base}/img/logos/cbs.svg` },
+  ],
   onLight = false,
   label,
 } = Astro.props;
@@ -18,7 +36,14 @@ const {
 <div class="trust" data-on-light={onLight}>
   {label && <div class="label">{label}</div>}
   <div class="row">
-    {clients.map((c) => <span class="client">{c}</span>)}
+    {clients.map((c) => (
+      <img
+        class="client-logo"
+        src={c.src}
+        alt={c.name}
+        style={c.scale ? `--scale: ${c.scale}` : undefined}
+      />
+    ))}
   </div>
 </div>
 
@@ -33,13 +58,16 @@ const {
   }
   .trust[data-on-light='true'] .label { color: var(--text-muted); }
   .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); }
-  .client {
-    color: var(--white);
+  .client-logo {
+    --scale: 1;
+    height: calc(26px * var(--scale));
+    width: auto;
     opacity: 0.85;
-    font-weight: var(--weight-bold);
-    font-size: var(--text-lg);
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
+    /* Forces pure white regardless of the source logo's real colors. */
+    filter: brightness(0) invert(1);
   }
-  .trust[data-on-light='true'] .client { color: var(--black); }
+  .trust[data-on-light='true'] .client-logo {
+    /* Forces pure black instead, for use on a light background. */
+    filter: brightness(0);
+  }
 </style>
