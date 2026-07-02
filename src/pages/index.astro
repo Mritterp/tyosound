@@ -388,6 +388,16 @@ const localBusinessSchema = {
       .ig-wrap :global(.eapps-instagram-feed-posts-item) {
         margin: 10px !important;
       }
+      /* Free-tier attribution badge. Didn't render in local dev (Elfsight
+         widgets often behave differently on localhost than the real
+         domain), so targeted by link destination rather than a guessed
+         class name — more robust either way, and client has done this
+         before and is fine with it. Verify on the live deploy that this
+         actually catches it; adjust the selector if Elfsight's markup
+         doesn't match this pattern. */
+      .ig-wrap :global(a[href*="elfsight.com"]) {
+        display: none !important;
+      }
 
       @media (max-width: 760px) {
         .service-cols { grid-template-columns: 1fr; gap: var(--space-6); }
