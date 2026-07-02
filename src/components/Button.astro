@@ -1,0 +1,83 @@
+---
+// TYO Sound — Button
+// Square-ish, uppercase, wide-tracked. Solid (black) or outline.
+// No accent color: hover inverts fill rather than shifting hue.
+interface Props {
+  variant?: 'solid' | 'outline';
+  onLight?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+}
+const {
+  variant = 'solid',
+  onLight = true,
+  size = 'md',
+  href,
+  type = 'button',
+  class: className,
+} = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class:list={['btn', className]}
+  data-variant={variant}
+  data-on-light={onLight}
+  data-size={size}
+  href={href}
+  type={href ? undefined : type}
+>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    font-family: var(--font-sans);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    border-radius: var(--radius-md);
+    border: var(--border-rule) solid var(--black);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1;
+    text-decoration: none;
+    background: var(--black);
+    color: var(--white);
+    transition:
+      background var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard);
+  }
+  .btn[data-size='sm'] { padding: 9px 16px; font-size: 12px; }
+  .btn[data-size='md'] { padding: 13px 24px; font-size: 14px; }
+  .btn[data-size='lg'] { padding: 16px 30px; font-size: 15px; }
+
+  .btn[data-variant='outline'] {
+    background: transparent;
+    color: var(--black);
+  }
+  .btn[data-on-light='false'] {
+    border-color: var(--white);
+    background: var(--white);
+    color: var(--black);
+  }
+  .btn[data-on-light='false'][data-variant='outline'] {
+    background: transparent;
+    color: var(--white);
+  }
+
+  /* Hover inverts fill — never a hue change */
+  .btn[data-variant='solid']:hover { background: transparent; color: var(--black); }
+  .btn[data-on-light='false'][data-variant='solid']:hover { color: var(--white); }
+  .btn[data-variant='outline']:hover { background: var(--black); color: var(--white); }
+  .btn[data-on-light='false'][data-variant='outline']:hover { background: var(--white); color: var(--black); }
+
+  .btn:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+</style>

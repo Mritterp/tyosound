@@ -19,17 +19,30 @@ Grotesk only, square corners, hard rules not shadows, no accent hue, no emoji).
 5. **Content maintenance:** client edits now; a Webflow-CMS-like admin UI is a
    real project goal (built in Bucket 5 over JSON data files — likely Decap/Sveltia).
 
-## Buckets (build one at a time, checkpoint after each)
-- **0 — Skeleton + pipeline** ✅ in progress: Astro scaffold, tokens wired,
+## Buckets (client waived per-bucket checkpoints for 1-5; DO NOT do bucket 6 without explicit go-live approval)
+- **0 — Skeleton + pipeline** ✅ done: Astro scaffold, tokens wired,
   auto-deploy to Pages. Preview: https://mritterp.github.io/tyosound/
-- **1 — Data + core primitives:** projects/equipment JSON (from Webflow exports),
-  Button/TextLink/Eyebrow/Icon.
-- **2 — Shared shell:** NavHeader + SiteFooter (+ form backend decision).
-- **3 — Home page:** hero, 3-col What We Do + filter, Featured Work accordion,
-  recent posts. Needs real YouTube IDs + per-project service tags from client.
-- **4 — Equipment page:** hero + category grid from equipment.json.
-- **5 — Editing system:** admin UI / CMS-like input over the JSON files.
+- **1 — Data + core primitives** ✅ done: projects.json/equipment.json (real
+  Webflow CMS exports, real YouTube IDs), Button/TextLink/Eyebrow/Icon.
+  Sampler at /components.
+- **2 — Shared shell** ✅ done: NavHeader (onPhoto/light + mobile menu),
+  SiteFooter (contact form posts to Formspree — endpoint is a PLACEHOLDER,
+  see SiteFooter.astro top comment, client must create a free Formspree
+  form and swap the URL).
+- **3 — Home page** ✅ done: hero (with redesign-added CTAs), 3-col What We
+  Do + live filter, Featured Work single-open accordion (lazy-loaded
+  YouTube embeds), recent posts grid (static images, not a live Instagram
+  embed — no API creds in scope). Events column copy is PLACEHOLDER —
+  needs real client language. project cat (production/post/events) tags
+  are illustrative, confirm with client.
+- **4 — Equipment page** ✅ done: hero + 8-category price grid from
+  equipment.json, verified 2px #1d201f borders / 0 radius / correct order.
+- **5 — Editing system:** PAUSED before starting — requires standing up a
+  new external service (OAuth proxy for a Decap/Sveltia-style admin UI, or
+  an alternative). Needs the client's explicit choice before creating any
+  new account/service.
 - **6 — Launch:** SEO/meta/structured data, analytics, a11y, DNS cutover.
+  DO NOT START without explicit "site approved, go live" from the client.
 
 ## Base-path note
 Preview is a Pages *project* site, so `astro.config.mjs` sets `base: '/tyosound'`.

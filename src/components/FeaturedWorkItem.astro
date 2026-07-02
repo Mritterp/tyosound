@@ -1,0 +1,124 @@
+---
+// TYO Sound — FeaturedWorkItem
+// A Featured Work row: oversized Light-300 uppercase title + client label.
+// Clicking toggles it open (video mounts) — single-open + service-filter
+// state is coordinated by the page-level script via data-cat / data-open.
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  client: string;
+  role?: string;
+  cat: string;
+  youtubeId?: string;
+  open?: boolean;
+}
+const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
+---
+
+<div class="row" data-work-item data-id={id} data-cat={cat} data-open={open}>
+  <button class="row-head" data-work-toggle aria-expanded={open}>
+    <span class="text">
+      <span class="title">{title}</span>
+      <span class="meta">{client}{role ? ` — ${role}` : ''}</span>
+    </span>
+    <span class="play-btn">
+      <Icon name="minus" size={20} class="icon-minus" />
+      <Icon name="play" size={15} class="icon-play" />
+    </span>
+  </button>
+
+  <div class="expand">
+    <div class="expand-inner">
+      <div class="media">
+        {youtubeId && (
+          <iframe
+            title={title}
+            data-youtube-src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .row { border-top: 1px solid var(--border); }
+  .row-head {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding: var(--space-5) 0;
+    text-align: left;
+  }
+  .text { display: flex; flex-direction: column; gap: 6px; opacity: 0.9; transition: opacity var(--dur-base); }
+  .row-head:hover .text { opacity: 1; }
+  .title {
+    font-size: var(--text-work-title);
+    font-weight: var(--weight-light);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tight);
+    line-height: 1;
+    transition: font-weight var(--dur-base), transform var(--dur-base) var(--ease-out);
+    display: block;
+  }
+  .row[data-open='true'] .title { font-weight: var(--weight-regular); }
+  .row-head:hover .title { transform: translateX(8px); }
+  .row[data-open='true'] .row-head:hover .title { transform: none; }
+  .meta {
+    font-size: var(--text-eyebrow);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .play-btn {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-pill);
+    border: 2px solid var(--black);
+    background: transparent;
+    color: var(--black);
+    transition: all var(--dur-base) var(--ease-standard);
+  }
+  .icon-minus { display: none; }
+  .row[data-open='true'] .play-btn { background: var(--black); color: var(--white); }
+  .row[data-open='true'] .icon-play { display: none; }
+  .row[data-open='true'] .icon-minus { display: block; }
+
+  .expand {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur-slow) var(--ease-out);
+  }
+  .row[data-open='true'] .expand { grid-template-rows: 1fr; }
+  .expand-inner { overflow: hidden; }
+  .media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--black);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: var(--space-6);
+  }
+  .media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+
+  /* filtered-out rows (different service category) are hidden entirely */
+  .row[data-hidden='true'] { display: none; }
+</style>

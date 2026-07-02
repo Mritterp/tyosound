@@ -1,0 +1,87 @@
+{
+  "_note": "Sourced from the live Webflow site (category names + sortingOrder confirmed via the Equipment Categories CMS collection API; item names/prices/quantities transcribed from the site's own print export, since the underlying Equipment collection items weren't pulled individually). This is the file the client edits directly (or via the Bucket 5 admin UI) to add/remove rental gear.",
+  "categories": [
+    {
+      "name": "Package Rates", "slug": "package-rates", "sortingOrder": 0,
+      "items": [
+        { "name": "Sound Cart Package", "price": 600, "qty": 1 },
+        { "name": "Interview Package", "price": 500, "qty": 1 }
+      ]
+    },
+    {
+      "name": "Mixers/Recorders", "slug": "mixers-recorders", "sortingOrder": 10,
+      "items": [
+        { "name": "Sound Devices Scorpio", "price": 350, "qty": 1 },
+        { "name": "Sound Devices 633", "price": 100, "qty": 1 },
+        { "name": "Tentacle Track E", "price": 50, "qty": 2 },
+        { "name": "Lectrosonics PDR", "price": 50, "qty": 1 },
+        { "name": "Zoom F4", "price": 50, "qty": 1 }
+      ]
+    },
+    {
+      "name": "Dialogue Microphones", "slug": "microphones", "sortingOrder": 30,
+      "items": [
+        { "name": "Schoeps MiniCMIT", "price": 100, "qty": 1 },
+        { "name": "Schoeps CMC6U + MK41", "price": 100, "qty": 1 },
+        { "name": "EV RE50B", "price": 75, "qty": 2 },
+        { "name": "Sanken CS-1E", "price": 75, "qty": 1 },
+        { "name": "Sennheiser MKH 416", "price": 75, "qty": 1 },
+        { "name": "Rode NTG3", "price": 50, "qty": 1 },
+        { "name": "Sanken COS-11D", "price": 30, "qty": 9 }
+      ]
+    },
+    {
+      "name": "Specialty Microphones", "slug": "specialty-microphones", "sortingOrder": 40,
+      "items": [
+        { "name": "Rode NT4", "price": 75, "qty": 1 },
+        { "name": "Shure Beta 91A", "price": 50, "qty": 1 },
+        { "name": "Spekco MHL5S", "price": 50, "qty": 1 },
+        { "name": "Sanken CUB-01", "price": 50, "qty": 1 },
+        { "name": "Azden SGM PDII", "price": 25, "qty": 3 }
+      ]
+    },
+    {
+      "name": "Talent Wireless", "slug": "wireless-transmitters", "sortingOrder": 50,
+      "items": [
+        { "name": "Lectrosonics A Band SRC + 2 SMDWB Combo", "price": 150, "qty": 2 },
+        { "name": "Lectrosonics Block 19 SRB + 2 SMQV Combo", "price": 150, "qty": 2 },
+        { "name": "Lectrosonics Block 20 411 + SMQV Combo", "price": 75, "qty": 1 }
+      ]
+    },
+    {
+      "name": "Timecode", "slug": "timecode", "sortingOrder": 60,
+      "items": [
+        { "name": "Denecke TS-3 Smart Slate", "price": 50, "qty": 1 },
+        { "name": "Denecke SB-3 Syncbox", "price": 30, "qty": 1 },
+        { "name": "Tentacle Sync E", "price": 25, "qty": 5 }
+      ]
+    },
+    {
+      "name": "Utility Wireless", "slug": "ifb-receivers", "sortingOrder": 70,
+      "items": [
+        { "name": "Sound Devices A10 Rack Mount Distribution", "price": 150, "qty": 1 },
+        { "name": "DADM226 Digitally Tuned Diversity Antenna Distribution", "price": 100, "qty": 1 },
+        { "name": "Eartec Hub Intercom System", "price": 100, "qty": 5 },
+        { "name": "Bumblebee Sidekick 3 IEM", "price": 75, "qty": 3 },
+        { "name": "Zaxcom RX200 Receiver", "price": 75, "qty": 2 },
+        { "name": "Lectrosonics A Band HMA", "price": 50, "qty": 1 },
+        { "name": "Lectrosonics Block 19 HM", "price": 50, "qty": 1 },
+        { "name": "Sennheiser EK EIM G4 IFB's", "price": 50, "qty": 8 },
+        { "name": "Half Rack SR EIM G4 Transmitter", "price": 50, "qty": 1 },
+        { "name": "Zaxcom TRX 900 CL Transmitter", "price": 50, "qty": 1 },
+        { "name": "Sennheiser EW G3 Combo", "price": 30, "qty": 3 }
+      ]
+    },
+    {
+      "name": "Sound Reinforcement", "slug": "sound-reinforcement", "sortingOrder": 80,
+      "items": [
+        { "name": "Allen and Heath DT168", "price": 100, "qty": 1 },
+        { "name": "AKG C414 XLII", "price": 50, "qty": 2 },
+        { "name": "SE Electronics V7X", "price": 25, "qty": 3 },
+        { "name": "SE Electronics V7", "price": 25, "qty": 3 },
+        { "name": "Shure Beta 58A", "price": 25, "qty": 3 },
+        { "name": "Shure SM57", "price": 25, "qty": 4 }
+      ]
+    }
+  ]
+}

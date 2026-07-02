@@ -1,0 +1,82 @@
+---
+import '../styles/styles.css';
+import NavHeader from '../components/NavHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import TextLink from '../components/TextLink.astro';
+import EquipmentCard from '../components/EquipmentCard.astro';
+import equipmentData from '../data/equipment.json';
+
+const base = import.meta.env.BASE_URL;
+const categories = [...equipmentData.categories].sort((a, b) => a.sortingOrder - b.sortingOrder);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Equipment Rental — TYO Sound</title>
+    <meta
+      name="description"
+      content="Professional audio equipment for rent from TYO Sound — mixers, recorders, microphones, wireless, timecode, and sound reinforcement. Washington, D.C. and Baltimore."
+    />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+  </head>
+  <body>
+    <NavHeader theme="light" active="Equipment" />
+
+    <section class="eq-hero">
+      <div class="content eq-hero-grid">
+        <div class="eq-hero-text">
+          <Eyebrow muted>Equipment Rental</Eyebrow>
+          <h1 class="eq-title">Equipment<br />Rental</h1>
+          <p class="eq-sub">Whether it's mixing live events or run and gun TV, we've got you covered.</p>
+          <TextLink href={`${base}/#contact`}>Contact for availability</TextLink>
+        </div>
+        <div class="eq-hero-photo">
+          <img src={`${base}/img/equipment-action.png`} alt="Sound mixer wearing a production sound bag rig" />
+        </div>
+      </div>
+    </section>
+
+    <section class="eq-grid-section">
+      <div class="content">
+        <div class="eq-grid">
+          {categories.map((cat) => (
+            <EquipmentCard category={cat.name} items={cat.items} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <SiteFooter />
+
+    <style>
+      body { margin: 0; font-family: var(--font-sans); background: var(--bg-page); }
+      .content { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--page-gutter); }
+
+      .eq-hero { padding: var(--space-8) 0 var(--section-pad-y); }
+      .eq-hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-8); align-items: center; }
+      .eq-title {
+        margin: var(--space-3) 0 var(--space-5);
+        font-weight: var(--weight-bold);
+        text-transform: uppercase;
+        font-size: var(--text-display);
+        line-height: var(--leading-tight);
+      }
+      .eq-sub { max-width: 46ch; font-size: var(--text-lg); font-weight: var(--weight-regular); color: var(--gray-600); margin: 0 0 var(--space-6); }
+      .eq-hero-photo { aspect-ratio: 3 / 4; overflow: hidden; }
+      .eq-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+      .eq-grid-section { padding-bottom: var(--section-pad-y); }
+      .eq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); align-items: start; }
+
+      @media (max-width: 760px) {
+        .eq-hero-grid { grid-template-columns: 1fr; }
+        .eq-hero-photo { order: -1; aspect-ratio: 16 / 10; }
+        .eq-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+---
+import '../styles/styles.css';
+import Button from '../components/Button.astro';
+import TextLink from '../components/TextLink.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Icon from '../components/Icon.astro';
+
+const icons = ['instagram', 'play', 'arrow-right', 'arrow-up-right', 'plus', 'minus', 'menu', 'x', 'mail', 'phone', 'map-pin'] as const;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Component sampler — TYO Sound</title>
+  </head>
+  <body>
+    <main class="page">
+      <section class="block">
+        <h2>Eyebrow</h2>
+        <div class="row">
+          <Eyebrow>Washington D.C. Based</Eyebrow>
+          <Eyebrow muted>Featured Work</Eyebrow>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>TextLink</h2>
+        <div class="row">
+          <TextLink href="#">Check out our equipment</TextLink>
+          <TextLink href="#">Contact for availability</TextLink>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>Button</h2>
+        <div class="row">
+          <Button variant="solid" size="sm">Send</Button>
+          <Button variant="solid" size="md">See featured work</Button>
+          <Button variant="outline" size="lg">Equipment rental</Button>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>Icon</h2>
+        <div class="row icons">
+          {icons.map((name) => (
+            <span class="icon-tile">
+              <Icon name={name} size={22} />
+              <small>{name}</small>
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section class="block dark">
+        <h2>On dark background</h2>
+        <div class="row">
+          <Eyebrow onLight={false} muted>Washington D.C. Based</Eyebrow>
+          <TextLink href="#" onLight={false}>Contact for availability</TextLink>
+          <Button variant="outline" onLight={false}>See featured work</Button>
+        </div>
+      </section>
+    </main>
+
+    <style>
+      body { margin: 0; background: var(--white); font-family: var(--font-sans); }
+      .page { max-width: 900px; margin: 0 auto; padding: var(--space-8) var(--page-gutter); display: grid; gap: var(--space-8); }
+      .block { padding-bottom: var(--space-6); border-bottom: var(--border-hairline) solid var(--border); }
+      .block.dark { background: var(--bg-inverse); padding: var(--space-6); border: none; }
+      h2 { font-weight: 500; font-size: var(--text-lg); margin: 0 0 var(--space-4); color: var(--text-primary); }
+      .dark h2 { color: var(--text-inverse); }
+      .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); }
+      .icons { gap: var(--space-6); }
+      .icon-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--black); }
+      .icon-tile small { font-size: 11px; color: var(--text-muted); }
+    </style>
+  </body>
+</html>

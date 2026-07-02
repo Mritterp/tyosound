@@ -1,0 +1,64 @@
+---
+// TYO Sound — EquipmentCard
+// Bordered category card from the Equipment page. Hard 2px black outline,
+// square corners. CMS-driven on the live site — this reads from
+// src/data/equipment.json (the file the client/admin-UI edits).
+interface Item { name: string; price: number; qty?: number }
+interface Props {
+  category: string;
+  items: Item[];
+}
+const { category, items } = Astro.props;
+---
+
+<section class="card">
+  <h3 class="heading">{category}</h3>
+  <dl class="list">
+    {items.map((it) => (
+      <div class="row">
+        <dt class="name">
+          {it.name}
+          {it.qty && it.qty > 1 ? <span class="qty">[{it.qty}X]</span> : null}
+        </dt>
+        <dd class="price">${it.price}/Day</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .card {
+    border: var(--border-rule) solid var(--black);
+    border-radius: var(--radius-none);
+    background: var(--white);
+    padding: var(--space-6);
+    font-family: var(--font-sans);
+    color: var(--black);
+  }
+  .heading {
+    margin: 0 0 var(--space-5);
+    font-size: var(--text-h3);
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tight);
+    line-height: 1.05;
+  }
+  .list { margin: 0; display: flex; flex-direction: column; }
+  .row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--border);
+  }
+  .row:first-child { border-top: none; }
+  .name { font-size: var(--text-body); font-weight: var(--weight-regular); line-height: 1.3; margin: 0; }
+  .qty { color: var(--text-muted); font-weight: var(--weight-medium); margin-left: 8px; font-variant-numeric: tabular-nums; }
+  .price {
+    margin: 0; flex: none;
+    font-size: var(--text-sm); font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide); text-transform: uppercase;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+// TYO Sound — TextLink
+// The site's signature inline link: uppercase, wide-tracked, 2px underline
+// rule. Used for "Check out our equipment", "Contact for availability", etc.
+// Dims on hover — no hue change (brand has no accent color).
+interface Props {
+  href?: string;
+  onLight?: boolean;
+  class?: string;
+}
+const { href = '#', onLight = true, class: className } = Astro.props;
+---
+
+<a href={href} class:list={['text-link', className]} data-on-light={onLight}>
+  <slot />
+</a>
+
+<style>
+  .text-link {
+    font-family: var(--font-sans);
+    font-weight: var(--weight-medium);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--black);
+    border-bottom: var(--border-rule) solid var(--black);
+    padding-bottom: 3px;
+    display: inline-block;
+    width: max-content;
+    opacity: 1;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+  .text-link[data-on-light='false'] {
+    color: var(--white);
+    border-bottom-color: var(--white);
+  }
+  .text-link:hover,
+  .text-link:focus-visible {
+    opacity: var(--hover-opacity);
+  }
+  .text-link:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+</style>

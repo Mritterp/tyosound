@@ -1,0 +1,79 @@
+---
+// TYO Sound — ServiceColumn
+// One column of the black "What we do" section. Selecting one filters the
+// Featured Work list below (wired via data-cat + the page-level script).
+interface Props {
+  index: number;
+  title: string;
+  body: string;
+  cat: string;
+  selected?: boolean;
+  linkLabel?: string;
+  linkHref?: string;
+}
+const { index, title, body, cat, selected = false, linkLabel, linkHref } = Astro.props;
+---
+
+<button class="col" data-service-col data-cat={cat} data-selected={selected} aria-pressed={selected}>
+  <span class="idx">{String(index).padStart(2, '0')}</span>
+  <span class="title">{title}</span>
+  <span class="body">{body}</span>
+  {linkLabel && (
+    <span class="link">
+      {linkHref ? <a href={linkHref}>{linkLabel}</a> : linkLabel}
+    </span>
+  )}
+</button>
+
+<style>
+  .col {
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--white);
+    font-family: var(--font-sans);
+    padding: var(--space-5) 0;
+    border-top: var(--border-rule) solid var(--border-inverse);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    opacity: 0.5;
+    transition: opacity var(--dur-base) var(--ease-standard), border-color var(--dur-base);
+    width: 100%;
+  }
+  .col[data-selected='true'] { opacity: 1; border-top-color: var(--white); }
+  .col:hover { opacity: 0.85; }
+  .col[data-selected='true']:hover { opacity: 1; }
+
+  .idx {
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--tracking-wider);
+    color: rgba(255, 255, 255, 0.55);
+    font-variant-numeric: tabular-nums;
+  }
+  .title {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tight);
+    line-height: 1.05;
+  }
+  .body {
+    font-size: var(--text-body);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-normal);
+    color: rgba(255, 255, 255, 0.78);
+  }
+  .link {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--white);
+    padding-bottom: 3px;
+    width: max-content;
+  }
+  .link a { color: inherit; text-decoration: none; }
+</style>

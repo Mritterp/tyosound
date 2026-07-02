@@ -1,0 +1,37 @@
+---
+// TYO Sound — Eyebrow
+// Small uppercase, wide-tracked label above headlines/section headers
+// ("WASHINGTON D.C. BASED", "WHAT WE DO", "FEATURED WORK").
+interface Props {
+  onLight?: boolean;
+  muted?: boolean;
+  as?: string;
+  class?: string;
+}
+const { onLight = true, muted = false, as: Tag = 'span', class: className } = Astro.props;
+---
+
+<Tag class:list={['eyebrow', className]} data-on-light={onLight} data-muted={muted}>
+  <slot />
+</Tag>
+
+<style>
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-weight: var(--weight-medium);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    display: inline-block;
+    color: var(--black);
+  }
+  .eyebrow[data-on-light='false'] {
+    color: var(--white);
+  }
+  .eyebrow[data-muted='true'] {
+    color: var(--text-muted);
+  }
+  .eyebrow[data-on-light='false'][data-muted='true'] {
+    color: var(--gray-400);
+  }
+</style>

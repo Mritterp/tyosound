@@ -1,0 +1,45 @@
+---
+// TYO Sound — TrustBar
+// Client/network wordmark row. Real brand marks weren't supplied — these
+// render as plain uppercase type (flagged substitution) until official
+// logos are licensed and swapped in.
+interface Props {
+  clients?: string[];
+  onLight?: boolean;
+  label?: string;
+}
+const {
+  clients = ['NBC', 'VICE', 'HBO', 'ABC', 'Netflix', 'CBS'],
+  onLight = false,
+  label,
+} = Astro.props;
+---
+
+<div class="trust" data-on-light={onLight}>
+  {label && <div class="label">{label}</div>}
+  <div class="row">
+    {clients.map((c) => <span class="client">{c}</span>)}
+  </div>
+</div>
+
+<style>
+  .trust { font-family: var(--font-sans); }
+  .label {
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: var(--space-5);
+  }
+  .trust[data-on-light='true'] .label { color: var(--text-muted); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); }
+  .client {
+    color: var(--white);
+    opacity: 0.85;
+    font-weight: var(--weight-bold);
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+  .trust[data-on-light='true'] .client { color: var(--black); }
+</style>

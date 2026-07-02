@@ -1,0 +1,14 @@
+{
+  "_note": "Sourced from the live Webflow Projects CMS collection (pulled via API, not guessed). youtubeId values are real, extracted from the CMS video-link URLs — this resolves the handoff's flagged 'video IDs weren't in the export' gap. The 'cat' field (production/post/events) is ILLUSTRATIVE — the source CMS never tagged projects by service line, so these are a best-guess mapping from the 'role' field. CONFIRM WITH CLIENT before treating cat as final, especially since no project is currently tagged 'events'.",
+  "projects": [
+    { "id": "the-slow-hustle", "title": "The Slow Hustle", "client": "HBO", "role": "Production Sound", "cat": "production", "sortingOrder": 0, "youtubeId": "uUS6AVKTU8g" },
+    { "id": "patis-mexican-table", "title": "Pati's Mexican Table", "client": "PBS", "role": "Production Sound", "cat": "production", "sortingOrder": 5, "youtubeId": "x5YpCKOufMo" },
+    { "id": "baltimore-rising", "title": "Baltimore Rising", "client": "HBO", "role": "Production Sound", "cat": "production", "sortingOrder": 10, "youtubeId": "9t87jLeOzPI" },
+    { "id": "paradise-papers", "title": "Paradise Papers", "client": "VICE", "role": "Production Sound", "cat": "production", "sortingOrder": 30, "youtubeId": "r8mdNahdo4M" },
+    { "id": "wild-one", "title": "Wild One", "client": "WALLFLOWER WANDERER X ALLYSA HANKEY", "role": "Production and Post", "cat": "post", "sortingOrder": 32, "youtubeId": "KzUsf2oQJ18" },
+    { "id": "deaf-u", "title": "Deaf U", "client": "NETFLIX", "role": "Production Sound", "cat": "production", "sortingOrder": 40, "youtubeId": "hr3wwPh5uKs" },
+    { "id": "rooftop-farms", "title": "Rooftop Farms", "client": "BUZFEED X HYUNDAI", "role": "Production Sound", "cat": "production", "sortingOrder": 70, "youtubeId": "bKCs23drsRs" },
+    { "id": "will-i-ever-be-satisfied", "title": "Will I Ever Be Satisfied", "client": "WALLFLOWER WANDERER X CRISTINA VANE", "role": "Production and Post", "cat": "post", "sortingOrder": 90, "youtubeId": "M4YF1wTTUQQ" },
+    { "id": "get-the-shot", "title": "Get the Shot", "client": "CAREFIRST", "role": "Production Sound", "cat": "production", "sortingOrder": 100, "youtubeId": "FXBI2GQNwKs" }
+  ]
+}

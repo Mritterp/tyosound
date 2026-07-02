@@ -1,0 +1,125 @@
+---
+// TYO Sound — NavHeader
+// Waveform mark + wordmark (left), centered nav, Instagram icon (right).
+// theme="onPhoto" = white over hero photo; theme="light" = dark ink on white.
+// Collapses to a menu button under 760px (progressive-enhancement JS below).
+import Icon from './Icon.astro';
+
+interface Props {
+  theme?: 'onPhoto' | 'light';
+  active?: string;
+}
+const { theme = 'onPhoto', active = 'Work' } = Astro.props;
+const links = ['Services', 'Work', 'Equipment', 'Contact'];
+const base = import.meta.env.BASE_URL;
+const hrefFor = (label: string) =>
+  label === 'Equipment' ? `${base}/equipment` : `${base}/#${label.toLowerCase()}`;
+---
+
+<header class="nav" data-theme={theme}>
+  <a href={`${base}/`} class="brand">
+    <span class="waveform" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+    <span class="wordmark">TYO Sound</span>
+  </a>
+
+  <nav class="nav-desktop">
+    {links.map((l) => (
+      <a href={hrefFor(l)} class="nav-link" data-active={active === l}>{l}</a>
+    ))}
+  </nav>
+
+  <div class="nav-right">
+    <a href="#" aria-label="Instagram" class="ig-link"><Icon name="instagram" size={22} /></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" data-nav-toggle>
+      <Icon name="menu" size={24} class="icon-menu" />
+      <Icon name="x" size={24} class="icon-close" />
+    </button>
+  </div>
+
+  <div class="nav-mobile" data-nav-mobile>
+    {links.map((l) => (
+      <a href={hrefFor(l)} class="nav-mobile-link">{l}</a>
+    ))}
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-nav-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const header = btn.closest('.nav');
+      const open = header?.getAttribute('data-menu-open') === 'true';
+      header?.setAttribute('data-menu-open', String(!open));
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+  });
+</script>
+
+<style>
+  .nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-5) var(--page-gutter);
+    font-family: var(--font-sans);
+    color: var(--white);
+  }
+  .nav[data-theme='light'] { color: var(--black); }
+
+  .brand { display: inline-flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+  .wordmark { font-weight: var(--weight-bold); letter-spacing: 0.14em; font-size: 18px; text-transform: uppercase; }
+  .waveform { display: inline-flex; align-items: center; gap: 3px; height: 22px; }
+  .waveform i { display: block; width: 3px; border-radius: 2px; background: currentColor; }
+  .waveform i:nth-child(1) { height: 8px; }
+  .waveform i:nth-child(2) { height: 16px; }
+  .waveform i:nth-child(3) { height: 22px; }
+  .waveform i:nth-child(4) { height: 12px; }
+  .waveform i:nth-child(5) { height: 18px; }
+
+  .nav-desktop { display: flex; gap: var(--space-6); }
+  .nav-link {
+    color: inherit;
+    text-decoration: none;
+    font-weight: var(--weight-medium);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    opacity: 0.72;
+    border-bottom: var(--border-rule) solid transparent;
+    padding-bottom: 3px;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+  .nav-link[data-active='true'] { opacity: 1; border-bottom-color: currentColor; }
+  .nav-link:hover { opacity: var(--hover-opacity); }
+
+  .nav-right { display: flex; align-items: center; gap: var(--space-4); }
+  .ig-link { color: inherit; display: inline-flex; transition: opacity var(--dur-fast); }
+  .ig-link:hover { opacity: var(--hover-opacity); }
+
+  .nav-toggle { display: none; background: none; border: none; color: inherit; cursor: pointer; padding: 0; }
+  .icon-close { display: none; }
+  .nav[data-menu-open='true'] .icon-menu { display: none; }
+  .nav[data-menu-open='true'] .icon-close { display: block; }
+
+  .nav-mobile {
+    display: none;
+    position: absolute; top: 100%; left: 0; right: 0; z-index: 20;
+    padding: var(--space-4) var(--page-gutter);
+    flex-direction: column; gap: var(--space-3);
+  }
+  .nav[data-theme='light'] .nav-mobile { background: var(--white); border-top: 1px solid var(--border); }
+  .nav[data-theme='onPhoto'] .nav-mobile { background: var(--black); border-top: 1px solid var(--border-inverse); }
+  .nav[data-menu-open='true'] .nav-mobile { display: flex; }
+  .nav-mobile-link {
+    color: inherit; text-decoration: none; font-weight: var(--weight-medium);
+    font-size: var(--text-lg); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  }
+  .nav[data-theme='light'] .nav-mobile-link { color: var(--black); }
+  .nav[data-theme='onPhoto'] .nav-mobile-link { color: var(--white); }
+
+  @media (max-width: 760px) {
+    .nav-desktop { display: none; }
+    .nav-toggle { display: inline-flex; }
+  }
+</style>
