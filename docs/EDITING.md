@@ -40,6 +40,23 @@ Same process, on [`src/data/projects.json`](https://github.com/Mritterp/tyosound
 - `youtubeId` is the part of a YouTube URL after `v=` (e.g. `youtube.com/watch?v=abcdEFG1234` → `abcdEFG1234`).
 - `sortingOrder`: lower numbers appear first within their category.
 
+## Editing Recent Posts (the Instagram-style grid)
+
+This grid is self-hosted, not a live Instagram sync — an embedded widget
+was tried first but turned out to be locked to the old Webflow domain and
+wouldn't load real posts here. Add a photo on [`src/data/instagram.json`](https://github.com/Mritterp/tyosound/blob/main/src/data/instagram.json):
+
+1. Upload the image file to `public/img/instagram/` on GitHub (use the
+   **Add file → Upload files** button in that folder).
+2. Add an entry to the `posts` array in `instagram.json`:
+   ```json
+   { "image": "/img/instagram/your-file-name.jpg", "alt": "Short description" }
+   ```
+3. Commit directly to `main` as above.
+
+The grid always shows 4 columns; add or remove entries any time you post
+something new worth featuring.
+
 ## If something breaks
 
 JSON is strict about commas and quotes — a misplaced comma will break the

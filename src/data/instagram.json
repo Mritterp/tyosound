@@ -1,0 +1,9 @@
+{
+  "_note": "Recent Posts grid, self-hosted (the reused Elfsight embed turned out to be domain-locked to the old Webflow site and wouldn't load real posts here). Add a new post by adding an entry below with an image dropped in public/img/instagram/ — same GitHub-web-editor workflow as equipment.json/projects.json, see docs/EDITING.md. Doesn't auto-sync with Instagram; posts are added manually.",
+  "profileUrl": "https://www.instagram.com/ritterpusch/",
+  "posts": [
+    { "image": "/img/work-interview.png", "alt": "On-set interview setup" },
+    { "image": "/img/insta-1.png", "alt": "Location sound recording setup" },
+    { "image": "/img/insta-2.png", "alt": "On-location production still" }
+  ]
+}
