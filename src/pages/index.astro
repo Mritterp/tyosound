@@ -90,7 +90,7 @@ const localBusinessSchema = {
         <Eyebrow onLight={false}>Washington D.C. Based</Eyebrow>
         <h1 class="hero-title">Production + Events<br />Audio Engineering</h1>
         <div class="hero-ctas">
-          <Button href="#featured-work" variant="outline" onLight={false}>See featured work</Button>
+          <Button href="#services" variant="outline" onLight={false}>See featured work</Button>
           <Button href={`${base}/equipment`} variant="outline" onLight={false}>Equipment rental</Button>
         </div>
       </div>
@@ -215,7 +215,15 @@ const localBusinessSchema = {
     </script>
 
     <style>
-      body { margin: 0; font-family: var(--font-sans); background: var(--bg-page); }
+      body {
+        margin: 0;
+        font-family: var(--font-sans);
+        background: var(--bg-page);
+        /* Tighter section rhythm than the shared --section-pad-y token —
+           client feedback on the live preview: too much dead space between
+           sections. */
+        --section-gap-home: clamp(32px, 4vw, 64px);
+      }
       .content { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--page-gutter); }
 
       .skip-link {
@@ -259,23 +267,23 @@ const localBusinessSchema = {
       .hero-ctas { display: flex; flex-wrap: wrap; gap: var(--space-4); }
 
       /* WHAT WE DO */
-      .what-we-do { background: var(--bg-inverse); padding: var(--section-pad-y) 0; }
+      .what-we-do { background: var(--bg-inverse); padding: var(--section-gap-home) 0; }
       .service-cols {
         margin-top: var(--space-6);
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: clamp(24px, 4vw, 56px);
       }
-      .trust-wrap { margin-top: var(--space-9); padding-top: var(--space-6); border-top: 1px solid var(--border-inverse); }
+      .trust-wrap { margin-top: var(--space-6); padding-top: var(--space-5); border-top: 1px solid var(--border-inverse); }
 
       /* FEATURED WORK */
-      .featured-work { background: var(--bg-muted); padding: var(--section-pad-y) 0; }
-      .fw-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); }
+      .featured-work { background: var(--bg-muted); padding: var(--section-gap-home) 0; }
+      .fw-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
       .fw-cat { font-family: var(--font-sans); font-weight: var(--weight-medium); font-size: var(--text-sm); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-primary); }
 
       /* RECENT POSTS */
-      .recent-posts { background: var(--white); padding: var(--section-pad-y) 0; }
-      .ig-wrap { margin-top: var(--space-6); }
+      .recent-posts { background: var(--white); padding: var(--section-gap-home) 0; }
+      .ig-wrap { margin-top: var(--space-5); }
 
       @media (max-width: 760px) {
         .service-cols { grid-template-columns: 1fr; gap: var(--space-6); }
