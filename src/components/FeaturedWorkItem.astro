@@ -20,7 +20,10 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
 <div class="row" data-work-item data-id={id} data-cat={cat} data-open={open}>
   <button class="row-head" data-work-toggle aria-expanded={open}>
     <span class="text">
-      <span class="title">{title}</span>
+      <span class="title-row">
+        <span class="title">{title}</span>
+        <span class="hoverwave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      </span>
       <span class="meta">{client}{role ? ` — ${role}` : ''}</span>
     </span>
     <span class="play-btn">
@@ -63,21 +66,71 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
   }
   .text { display: flex; flex-direction: column; gap: 6px; opacity: 0.9; transition: opacity var(--dur-base); }
   .row-head:hover .text { opacity: 1; }
+  .title-row { display: flex; align-items: center; }
+  /* Real values pulled from the live Webflow site's "featuredwork-title"
+     style/breakpoints via the Data API (not estimated from screenshots):
+     base 5.7rem/-0.3rem tracking, stepping down at their exact breakpoints. */
   .title {
-    font-size: var(--text-work-title);
+    font-size: 5.7rem;
+    line-height: 5.7rem;
     font-weight: var(--weight-light);
     text-transform: uppercase;
-    letter-spacing: var(--tracking-tight);
-    line-height: 1;
-    transition: font-weight var(--dur-base), transform var(--dur-base) var(--ease-out);
+    letter-spacing: -0.3rem;
+    transition: font-weight var(--dur-base), transform var(--dur-base) var(--ease-out), color var(--dur-base);
     display: block;
+  }
+  @media (max-width: 991px) {
+    .title { font-size: 3.3rem; line-height: 3.3rem; }
+  }
+  @media (max-width: 767px) {
+    .title { font-size: 2.5rem; line-height: 2.5rem; letter-spacing: -0.15rem; }
+  }
+  @media (max-width: 479px) {
+    .title { font-size: 1.8rem; line-height: 1.8rem; }
   }
   .row[data-open='true'] .title { font-weight: var(--weight-regular); }
   .row-head:hover .title { transform: translateX(8px); }
   .row[data-open='true'] .row-head:hover .title { transform: none; }
+  /* Hover color/weight is a confirmed real deviation from the "monochrome,
+     no accent hue" brand rule stated elsewhere in the design handoff — this
+     exact hover pseudo (color + weight) is pulled directly from the live
+     site's CSS, not invented, so it wins over that stated rule here. */
+  .row-head:hover .title { color: #245486; font-weight: var(--weight-bold); }
+
+  .hoverwave {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 28px;
+    margin-left: var(--space-5);
+    color: #245486;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+  }
+  .hoverwave i { display: block; width: 4px; border-radius: 2px; background: currentColor; }
+  .hoverwave i:nth-child(1) { height: 30%; }
+  .hoverwave i:nth-child(2) { height: 65%; }
+  .hoverwave i:nth-child(3) { height: 100%; }
+  .hoverwave i:nth-child(4) { height: 50%; }
+  .hoverwave i:nth-child(5) { height: 75%; }
+  .row-head:hover .hoverwave { opacity: 1; transform: translateX(0); }
+  .row-head:hover .hoverwave i { animation: hoverwave-bounce 0.9s var(--ease-standard) infinite; }
+  .hoverwave i:nth-child(2) { animation-delay: 0.08s; }
+  .hoverwave i:nth-child(3) { animation-delay: 0.16s; }
+  .hoverwave i:nth-child(4) { animation-delay: 0.24s; }
+  .hoverwave i:nth-child(5) { animation-delay: 0.32s; }
+  @keyframes hoverwave-bounce {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.45); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .row-head:hover .hoverwave i { animation: none; }
+  }
+
   .meta {
     font-size: var(--text-eyebrow);
-    font-weight: var(--weight-medium);
+    font-weight: var(--weight-bold);
     letter-spacing: var(--tracking-wider);
     text-transform: uppercase;
     color: var(--text-muted);
