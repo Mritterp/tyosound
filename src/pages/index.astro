@@ -85,9 +85,9 @@ const localBusinessSchema = {
     <section class="hero" id="main">
       <img class="hero-photo" src={`${base}/img/hero-dc-capitol.png`} alt="Washington, D.C. streetscape near the U.S. Capitol" />
       <div class="hero-scrim"></div>
-      <div class="hero-header"><NavHeader theme="onPhoto" active="Work" /></div>
+      <div class="hero-header"><NavHeader theme="onPhoto" active="Services" /></div>
       <div class="hero-content">
-        <Eyebrow onLight={false}>Washington D.C. Based</Eyebrow>
+        <Eyebrow onLight={false} class="hero-eyebrow">Washington D.C. Based</Eyebrow>
         <h1 class="hero-title">Production + Events<br />Audio Engineering</h1>
         <div class="hero-ctas">
           <Button href="#services" variant="outline" onLight={false}>See featured work</Button>
@@ -113,15 +113,13 @@ const localBusinessSchema = {
             />
           ))}
         </div>
-        <div class="trust-wrap">
-          <TrustBar label="Clients Include" />
-        </div>
       </div>
     </section>
 
     <!-- FEATURED WORK -->
     <section class="featured-work" id="featured-work">
       <canvas class="fw-static" data-tv-static aria-hidden="true"></canvas>
+      <div class="channel-flash" data-channel-flash aria-hidden="true"></div>
       <div class="content">
         <div class="fw-header">
           <h2 class="fw-title">Featured Work</h2>
@@ -139,6 +137,13 @@ const localBusinessSchema = {
             />
           ))}
         </div>
+      </div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section class="clients">
+      <div class="content">
+        <TrustBar label="Clients Include" />
       </div>
     </section>
 
@@ -171,11 +176,13 @@ const localBusinessSchema = {
       const colsWrap = document.querySelector('[data-service-cols]');
       const listWrap = document.querySelector('[data-fw-list]');
       const catLabel = document.querySelector('[data-fw-cat-label]');
+      const channelFlash = document.querySelector('[data-channel-flash]');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (colsWrap && listWrap) {
         const cols = [...colsWrap.querySelectorAll('[data-service-col]')];
         const rows = [...listWrap.querySelectorAll('[data-work-item]')];
 
-        function applyFilter(cat) {
+        function swapFilter(cat) {
           cols.forEach((c) => {
             const isSelected = c.dataset.cat === cat;
             c.setAttribute('data-selected', String(isSelected));
@@ -192,6 +199,20 @@ const localBusinessSchema = {
           // Featured Work always loads/switches with everything collapsed —
           // no row auto-opens on category change.
           rows.forEach((r) => setOpen(r, false));
+        }
+
+        // "Changing the channel": a brief static/flash plays over Featured
+        // Work, with the actual row swap happening hidden underneath it —
+        // mimicking an old TV's blackout-then-resync when you flip channels.
+        function applyFilter(cat) {
+          if (channelFlash && !reduceMotion) {
+            channelFlash.classList.remove('flashing');
+            void channelFlash.offsetWidth; // restart the animation
+            channelFlash.classList.add('flashing');
+            setTimeout(() => swapFilter(cat), 150);
+          } else {
+            swapFilter(cat);
+          }
         }
 
         function setOpen(row, open) {
@@ -216,6 +237,13 @@ const localBusinessSchema = {
             const isOpen = r.dataset.open === 'true';
             rows.forEach((other) => other !== r && setOpen(other, false));
             setOpen(r, !isOpen);
+            if (!isOpen) {
+              // Wait for the expand transition (--dur-slow, 480ms) so the
+              // scroll target accounts for the row's final expanded height.
+              setTimeout(() => {
+                r.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
+              }, 500);
+            }
           });
         });
 
@@ -330,7 +358,11 @@ const localBusinessSchema = {
         line-height: var(--leading-tight);
         letter-spacing: var(--tracking-tight);
         max-width: 20ch;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
       }
+      /* Subtle shadow so both read clearly over the hero photo regardless
+         of what's behind them. */
+      :global(.hero-eyebrow) { text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5); }
       .hero-ctas { display: flex; flex-wrap: wrap; gap: var(--space-4); }
 
       /* WHAT WE DO */
@@ -341,7 +373,8 @@ const localBusinessSchema = {
         grid-template-columns: repeat(3, 1fr);
         gap: clamp(24px, 4vw, 56px);
       }
-      .trust-wrap { margin-top: var(--space-6); }
+      /* CLIENTS */
+      .clients { background: var(--bg-inverse); padding: var(--section-gap-home) 0; }
 
       /* FEATURED WORK */
       .featured-work { position: relative; background: var(--bg-muted); padding: var(--section-gap-home) 0; overflow: hidden; }
@@ -361,6 +394,35 @@ const localBusinessSchema = {
         height: 100%;
         opacity: 0.06;
         pointer-events: none;
+      }
+      /* "Changing the channel" flash, played over the section when the
+         service filter changes — a quick static/blackout burst with the
+         actual row swap happening hidden underneath it (JS above). */
+      .channel-flash {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+        opacity: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.95) 0px,
+          rgba(255, 255, 255, 0.95) 1px,
+          rgba(20, 20, 20, 0.92) 1px,
+          rgba(20, 20, 20, 0.92) 3px
+        );
+      }
+      .channel-flash.flashing {
+        animation: channel-flash-anim 0.55s steps(1, end);
+      }
+      @keyframes channel-flash-anim {
+        0% { opacity: 0; }
+        12% { opacity: 1; }
+        28% { opacity: 0.15; }
+        42% { opacity: 1; }
+        58% { opacity: 0; }
+        72% { opacity: 0.7; }
+        100% { opacity: 0; }
       }
       .fw-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
       /* Real size pulled from the live site's "home__featuredwork-header"

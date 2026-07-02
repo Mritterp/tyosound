@@ -9,17 +9,13 @@ interface Props {
   theme?: 'onPhoto' | 'light';
   active?: string;
 }
-const { theme = 'onPhoto', active = 'Work' } = Astro.props;
-const links = ['Services', 'Work', 'Equipment', 'Contact'];
+const { theme = 'onPhoto', active = 'Services' } = Astro.props;
+// "Work" was dropped — the hero's own "See featured work" CTA already
+// covers that job, so it was redundant in the nav.
+const links = ['Services', 'Equipment', 'Contact'];
 const base = import.meta.env.BASE_URL;
-const hrefFor = (label: string) => {
-  if (label === 'Equipment') return `${base}/equipment`;
-  // "Work" lands on the What We Do section (not #featured-work directly) so
-  // visitors see the service filter and can click through it to watch
-  // Featured Work update below, same as the hero's "See featured work" CTA.
-  if (label === 'Work') return `${base}/#services`;
-  return `${base}/#${label.toLowerCase()}`;
-};
+const hrefFor = (label: string) =>
+  label === 'Equipment' ? `${base}/equipment` : `${base}/#${label.toLowerCase()}`;
 ---
 
 <header class="nav" data-theme={theme}>

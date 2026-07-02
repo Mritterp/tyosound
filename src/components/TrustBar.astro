@@ -1,11 +1,12 @@
 ---
 // TYO Sound — TrustBar
-// Client/network logo row. Real official marks, sourced from Wikimedia
-// Commons (public-domain-status vector files, per each file's own page —
-// still trademarked, used here the same "worked with" factual way the
-// original site used them). Forced to solid monochrome via CSS filter
-// since the brand has no color system, regardless of each logo's real
-// intrinsic colors.
+// Client/network logo carousel. Real official marks, sourced from
+// Wikimedia Commons (public-domain-status vector files, per each file's
+// own page — still trademarked, used here the same "worked with" factual
+// way the original site used them). Forced to solid monochrome via CSS
+// filter since the brand has no color system, regardless of each logo's
+// real intrinsic colors. Auto-scrolls continuously (pauses on hover) so
+// the growing client list all fits without wrapping or shrinking.
 interface Client {
   name: string;
   src: string;
@@ -15,7 +16,10 @@ interface Client {
   // Logos that are already genuinely two-tone (e.g. ABC's black circle +
   // white lowercase letters) need a plain color invert() to preserve that
   // internal contrast — brightness(0) invert(1) crushes both tones to the
-  // same black first, erasing the letters entirely.
+  // same black first, erasing the letters entirely. Logos whose real
+  // colors weren't black/white (e.g. PBS blue, TLC red) had that color
+  // hand-neutralized to black directly in the SVG file so this treatment
+  // applies cleanly.
   bitonal?: boolean;
 }
 interface Props {
@@ -27,13 +31,22 @@ const base = import.meta.env.BASE_URL;
 const {
   clients = [
     { name: 'NBC', src: `${base}/img/logos/nbc.svg` },
-    { name: 'VICE', src: `${base}/img/logos/vice.svg` },
+    { name: 'VICE', src: `${base}/img/logos/vice.svg`, bitonal: true },
     { name: 'HBO', src: `${base}/img/logos/hbo.svg` },
-    { name: 'ABC', src: `${base}/img/logos/abc.svg`, scale: 0.8, bitonal: true },
+    { name: 'ABC', src: `${base}/img/logos/abc.svg`, scale: 1.15, bitonal: true },
     { name: 'Netflix', src: `${base}/img/logos/netflix.svg`, scale: 1.1 },
     { name: 'CBS', src: `${base}/img/logos/cbs.svg` },
     { name: 'PBS', src: `${base}/img/logos/pbs.svg`, bitonal: true },
     { name: 'Kaiser Permanente', src: `${base}/img/logos/kaiser.svg`, scale: 1.3 },
+    { name: 'Showtime', src: `${base}/img/logos/showtime.svg`, scale: 1.1 },
+    { name: 'Discovery', src: `${base}/img/logos/discovery.svg`, scale: 1.1 },
+    { name: 'Amazon Prime Video', src: `${base}/img/logos/prime-video.svg`, scale: 1.2 },
+    { name: 'Paramount+', src: `${base}/img/logos/paramount-plus.svg`, scale: 1.1 },
+    { name: 'History Channel', src: `${base}/img/logos/history.svg`, scale: 0.9 },
+    { name: 'TLC', src: `${base}/img/logos/tlc.svg`, scale: 0.9, bitonal: true },
+    { name: 'National Geographic', src: `${base}/img/logos/natgeo.svg`, scale: 1.1 },
+    { name: 'ESPN', src: `${base}/img/logos/espn.svg`, scale: 1.2 },
+    { name: 'BBC', src: `${base}/img/logos/bbc.svg`, scale: 0.9 },
     // Blue Cross Blue Shield: no clean national-logo SVG found on Wikimedia
     // Commons (only regional variants, e.g. Blue Shield of California) —
     // holding off rather than guessing which entity/mark is right. Add a
@@ -46,16 +59,19 @@ const {
 
 <div class="trust" data-on-light={onLight}>
   {label && <div class="label">{label}</div>}
-  <div class="row">
-    {clients.map((c) => (
-      <img
-        class="client-logo"
-        data-bitonal={c.bitonal ? 'true' : undefined}
-        src={c.src}
-        alt={c.name}
-        style={c.scale ? `--scale: ${c.scale}` : undefined}
-      />
-    ))}
+  <div class="carousel">
+    <div class="carousel-track">
+      {[...clients, ...clients].map((c) => (
+        <img
+          class="client-logo"
+          data-bitonal={c.bitonal ? 'true' : undefined}
+          src={c.src}
+          alt={c.name}
+          loading="lazy"
+          style={c.scale ? `--scale: ${c.scale}` : undefined}
+        />
+      ))}
+    </div>
   </div>
 </div>
 
@@ -69,9 +85,32 @@ const {
     margin-bottom: var(--space-5);
   }
   .trust[data-on-light='true'] .label { color: var(--text-muted); }
-  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); }
+
+  .carousel {
+    overflow: hidden;
+    /* fade the edges so logos don't hard-clip mid-scroll */
+    mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+  }
+  .carousel-track {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    width: max-content;
+    animation: trust-scroll 50s linear infinite;
+  }
+  .carousel:hover .carousel-track { animation-play-state: paused; }
+  @keyframes trust-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-track { animation: none; flex-wrap: wrap; width: 100%; }
+  }
+
   .client-logo {
     --scale: 1;
+    flex: none;
     height: calc(26px * var(--scale));
     width: auto;
     opacity: 0.85;
