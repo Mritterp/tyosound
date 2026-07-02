@@ -1,0 +1,36 @@
+/* ============================================================
+   TYO Sound — Spacing, layout & radius tokens
+   The site is spacious and editorial: full-bleed sections, wide
+   gutters, generous vertical rhythm between sections. Corners are
+   essentially square — the brand uses hard rules and outlines, not
+   rounded cards.
+   ============================================================ */
+:root {
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-11: 160px;
+
+  /* Section rhythm */
+  --section-pad-y: clamp(64px, 9vw, 128px);
+  --page-gutter: clamp(20px, 5vw, 80px); /* @kind spacing */
+  --content-max: 1440px;
+
+  /* Radius — brand is square. Keep these near-zero. */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 3px;    /* form inputs, buttons */
+  --radius-pill: 999px;
+
+  /* Border widths */
+  --border-hairline: 1px;
+  --border-rule: 2px;   /* equipment card outlines, underlines */
+}

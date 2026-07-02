@@ -1,0 +1,6 @@
+/* TYO Sound webfonts
+ * The live site self-hosts Space Grotesk (weights 300/400/500/700).
+ * Those original binaries were NOT included in the handoff, so we load the
+ * identical family from Google Fonts. Swap these @font-face rules for the
+ * self-hosted woff2 files if/when they are provided. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');

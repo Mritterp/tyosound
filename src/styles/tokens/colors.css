@@ -1,0 +1,49 @@
+/* ============================================================
+   TYO Sound — Color tokens
+   Confirmed brand palette (Webflow Variable API): only two colors
+   are actually defined — a near-black charcoal and white. There is
+   NO accent color anywhere on the site; color comes entirely from
+   photography and client logos. The grays below are systematized
+   from one-off values seen in the UI (e.g. Featured Work bg).
+   ============================================================ */
+:root {
+  /* --- Base brand --- */
+  --black: #1d201f;        /* confirmed --black: near-black charcoal, not pure #000 */
+  --white: #ffffff;        /* confirmed --white */
+
+  /* --- Warm neutral scale (systematized, tuned toward the charcoal) --- */
+  --gray-50:  #f6f6f4;     /* Featured Work section background */
+  --gray-100: #eeeeeb;
+  --gray-200: #e0e0dc;
+  --gray-300: #c9c9c4;
+  --gray-400: #9a9b96;
+  --gray-500: #6f716c;
+  --gray-600: #4a4c48;
+  --gray-700: #34363300;   /* placeholder, overridden below */
+  --gray-700: #343633;
+  --gray-900: #1d201f;     /* === --black */
+
+  /* Pure black reserved for photo overlays / true shadow only */
+  --true-black: #000000;
+
+  /* ---------- Semantic aliases ---------- */
+  --bg-page:        var(--white);
+  --bg-inverse:     var(--black);     /* "What we do", footer */
+  --bg-muted:       var(--gray-50);   /* Featured Work */
+
+  --text-primary:   var(--black);
+  --text-inverse:   var(--white);
+  --text-muted:     var(--gray-500);
+  --text-on-photo:  var(--white);
+
+  --surface-card:   var(--white);
+  --surface-card-inverse: var(--black);
+
+  --border:         var(--gray-200);
+  --border-strong:  var(--black);     /* equipment cards use a hard black rule */
+  --border-inverse: rgba(255,255,255,0.18);
+
+  /* Photo scrim — how imagery is darkened for legible white type */
+  --scrim-hero: linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.10) 40%, rgba(0,0,0,0.45) 100%); /* @kind other */
+  --scrim-flat: rgba(0,0,0,0.35);
+}

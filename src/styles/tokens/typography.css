@@ -1,0 +1,47 @@
+/* ============================================================
+   TYO Sound — Typography tokens
+   Single family: Space Grotesk (300 / 400 / 500 / 700).
+   The heavy all-caps hero headlines and the thin Featured Work
+   titles are the SAME typeface at different weights — not two faces.
+   Headlines: uppercase, tight tracking, bold. Body: sentence case,
+   regular. Labels/eyebrows: uppercase, wide tracking.
+   ============================================================ */
+:root {
+  /* Family */
+  --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-sans);
+  --font-body: var(--font-sans);
+
+  /* Weights */
+  --weight-light: 300;    /* Featured Work titles */
+  --weight-regular: 400;  /* body copy */
+  --weight-medium: 500;   /* nav, labels, buttons */
+  --weight-bold: 700;     /* hero + section headlines */
+
+  /* Fluid display sizes (hero, section heads) */
+  --text-hero: clamp(2.75rem, 7vw, 6.5rem);     /* PRODUCTION + EVENTS */
+  --text-display: clamp(2.25rem, 5vw, 4.25rem); /* EQUIPMENT RENTAL */
+  --text-h1: clamp(2rem, 4vw, 3.25rem);
+  --text-h2: clamp(1.6rem, 3vw, 2.5rem);
+  --text-work-title: clamp(1.75rem, 4.5vw, 4rem); /* Featured Work list rows */
+
+  /* Fixed sizes */
+  --text-h3: 1.5rem;      /* 24px */
+  --text-lg: 1.25rem;     /* 20px */
+  --text-body: 1.0625rem; /* 17px */
+  --text-sm: 0.9375rem;   /* 15px */
+  --text-eyebrow: 0.8125rem; /* 13px labels */
+  --text-xs: 0.75rem;     /* 12px */
+
+  /* Line heights */
+  --leading-tight: 0.98;   /* stacked all-caps headlines */
+  --leading-snug: 1.15;
+  --leading-normal: 1.5;   /* body */
+  --leading-relaxed: 1.6;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;   /* big display */
+  --tracking-normal: 0em;
+  --tracking-wide: 0.08em;     /* eyebrows / nav */
+  --tracking-wider: 0.16em;    /* small all-caps labels */
+}
