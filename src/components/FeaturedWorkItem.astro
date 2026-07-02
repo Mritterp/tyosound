@@ -3,8 +3,6 @@
 // A Featured Work row: oversized Light-300 uppercase title + client label.
 // Clicking toggles it open (video mounts) — single-open + service-filter
 // state is coordinated by the page-level script via data-cat / data-open.
-import Icon from './Icon.astro';
-
 interface Props {
   id: string;
   title: string;
@@ -25,10 +23,6 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
         <span class="hoverwave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
       </span>
       <span class="meta">{client}{role ? ` — ${role}` : ''}</span>
-    </span>
-    <span class="play-btn">
-      <Icon name="minus" size={20} class="icon-minus" />
-      <Icon name="play" size={15} class="icon-play" />
     </span>
   </button>
 
@@ -59,8 +53,6 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
     color: var(--black);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-5);
     padding: var(--space-5) 0;
     text-align: left;
   }
@@ -108,22 +100,27 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
     transform: translateX(-8px);
     transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
   }
-  .hoverwave i { display: block; width: 4px; border-radius: 2px; background: currentColor; }
+  /* Square corners (no border-radius — matches the brand's square-corner
+     rule; the earlier rounded bars were a mistake). Each bar runs its OWN
+     keyframes/duration/delay so they bounce independently rather than as
+     one synchronized ripple, matching the real site's feel more closely. */
+  .hoverwave i { display: block; width: 4px; background: currentColor; transform-origin: bottom; }
   .hoverwave i:nth-child(1) { height: 30%; }
   .hoverwave i:nth-child(2) { height: 65%; }
   .hoverwave i:nth-child(3) { height: 100%; }
   .hoverwave i:nth-child(4) { height: 50%; }
   .hoverwave i:nth-child(5) { height: 75%; }
   .row-head:hover .hoverwave { opacity: 1; transform: translateX(0); }
-  .row-head:hover .hoverwave i { animation: hoverwave-bounce 0.9s var(--ease-standard) infinite; }
-  .hoverwave i:nth-child(2) { animation-delay: 0.08s; }
-  .hoverwave i:nth-child(3) { animation-delay: 0.16s; }
-  .hoverwave i:nth-child(4) { animation-delay: 0.24s; }
-  .hoverwave i:nth-child(5) { animation-delay: 0.32s; }
-  @keyframes hoverwave-bounce {
-    0%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(0.45); }
-  }
+  .row-head:hover .hoverwave i:nth-child(1) { animation: wave-a 0.62s ease-in-out infinite; }
+  .row-head:hover .hoverwave i:nth-child(2) { animation: wave-b 0.83s ease-in-out infinite; }
+  .row-head:hover .hoverwave i:nth-child(3) { animation: wave-c 0.71s ease-in-out infinite; }
+  .row-head:hover .hoverwave i:nth-child(4) { animation: wave-d 0.95s ease-in-out infinite; }
+  .row-head:hover .hoverwave i:nth-child(5) { animation: wave-e 0.68s ease-in-out infinite; }
+  @keyframes wave-a { 0%, 100% { transform: scaleY(1); } 40% { transform: scaleY(0.35); } 70% { transform: scaleY(0.8); } }
+  @keyframes wave-b { 0%, 100% { transform: scaleY(0.5); } 30% { transform: scaleY(1); } 65% { transform: scaleY(0.25); } }
+  @keyframes wave-c { 0%, 100% { transform: scaleY(0.8); } 50% { transform: scaleY(0.3); } 80% { transform: scaleY(1); } }
+  @keyframes wave-d { 0%, 100% { transform: scaleY(0.4); } 35% { transform: scaleY(0.9); } 75% { transform: scaleY(0.55); } }
+  @keyframes wave-e { 0%, 100% { transform: scaleY(1); } 45% { transform: scaleY(0.5); } 85% { transform: scaleY(0.75); } }
   @media (prefers-reduced-motion: reduce) {
     .row-head:hover .hoverwave i { animation: none; }
   }
@@ -135,24 +132,6 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
     text-transform: uppercase;
     color: var(--text-muted);
   }
-
-  .play-btn {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-pill);
-    border: 2px solid var(--black);
-    background: transparent;
-    color: var(--black);
-    transition: all var(--dur-base) var(--ease-standard);
-  }
-  .icon-minus { display: none; }
-  .row[data-open='true'] .play-btn { background: var(--black); color: var(--white); }
-  .row[data-open='true'] .icon-play { display: none; }
-  .row[data-open='true'] .icon-minus { display: block; }
 
   .expand {
     display: grid;

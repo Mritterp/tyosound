@@ -41,7 +41,7 @@ const services = [
 ];
 
 const defaultCat = 'production';
-const firstOpenId = projects.find((p) => p.cat === defaultCat)?.id ?? projects[0].id;
+// Featured Work loads with everything collapsed — no row opens automatically.
 
 const description = 'TYO Sound — production sound, audio post, and events audio engineering in Washington, D.C. and Baltimore. Interviews, documentaries, film, and live events.';
 
@@ -135,7 +135,6 @@ const localBusinessSchema = {
               role={p.role}
               cat={p.cat}
               youtubeId={p.youtubeId}
-              open={p.id === firstOpenId}
             />
           ))}
         </div>
@@ -163,7 +162,7 @@ const localBusinessSchema = {
 
     <SiteFooter />
 
-    <script define:vars={{ services: services.map((s) => ({ cat: s.cat, title: s.title })), projects: projects.map((p) => ({ id: p.id, cat: p.cat })) }}>
+    <script define:vars={{ services: services.map((s) => ({ cat: s.cat, title: s.title })), projects: projects.map((p) => ({ id: p.id, cat: p.cat })), defaultCat }}>
       const colsWrap = document.querySelector('[data-service-cols]');
       const listWrap = document.querySelector('[data-fw-list]');
       const catLabel = document.querySelector('[data-fw-cat-label]');
@@ -180,22 +179,14 @@ const localBusinessSchema = {
           const svc = services.find((s) => s.cat === cat);
           if (catLabel && svc) catLabel.textContent = svc.title;
 
-          let visibleIds = [];
           rows.forEach((r) => {
             const match = r.dataset.cat === cat;
             r.setAttribute('data-hidden', String(!match));
-            if (match) visibleIds.push(r.dataset.id);
           });
 
-          // if the currently-open row isn't in the new list, open the first visible row
-          const openRow = rows.find((r) => r.dataset.open === 'true');
-          if (!openRow || openRow.dataset.cat !== cat) {
-            rows.forEach((r) => setOpen(r, false));
-            if (visibleIds.length) {
-              const first = rows.find((r) => r.dataset.id === visibleIds[0]);
-              if (first) setOpen(first, true);
-            }
-          }
+          // Featured Work always loads/switches with everything collapsed —
+          // no row auto-opens on category change.
+          rows.forEach((r) => setOpen(r, false));
         }
 
         function setOpen(row, open) {
@@ -223,28 +214,39 @@ const localBusinessSchema = {
           });
         });
 
-        // initial: mark filtered-out rows hidden (server rendered all as visible)
-        rows.forEach((r) => r.setAttribute('data-hidden', String(r.dataset.cat !== rows.find((x) => x.dataset.open === 'true')?.dataset.cat)));
+        // initial: mark filtered-out rows hidden (server rendered all as visible);
+        // everything stays collapsed — applyFilter no longer auto-opens a row.
+        rows.forEach((r) => r.setAttribute('data-hidden', String(r.dataset.cat !== defaultCat)));
       }
     </script>
 
     <script>
       // Analog-TV static behind Featured Work: draws random grayscale noise
-      // into a small offscreen-resolution canvas each frame, then lets CSS
-      // (image-rendering: pixelated) blow it up to full size for the
-      // blocky, low-fi "bad reception" look, instead of shipping a video file.
+      // at (roughly) the canvas's real rendered resolution every frame, for
+      // fine film-grain static rather than large blocky pixels — no video
+      // file to ship/host.
       const staticCanvas = document.querySelector('[data-tv-static]');
       if (staticCanvas instanceof HTMLCanvasElement) {
         const ctx = staticCanvas.getContext('2d');
-        const NOISE_W = 160;
-        const NOISE_H = 90;
-        staticCanvas.width = NOISE_W;
-        staticCanvas.height = NOISE_H;
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Half the CSS pixel size keeps this fine-grained without doing a
+        // full devicePixelRatio-scaled fill every frame (still visually
+        // "very fine" static, just not literally 1:1 with physical pixels).
+        const RESOLUTION_SCALE = 0.5;
+        let w = 0;
+        let h = 0;
+
+        function resize() {
+          const rect = staticCanvas.getBoundingClientRect();
+          w = Math.max(1, Math.round(rect.width * RESOLUTION_SCALE));
+          h = Math.max(1, Math.round(rect.height * RESOLUTION_SCALE));
+          staticCanvas.width = w;
+          staticCanvas.height = h;
+        }
 
         function drawFrame() {
-          if (!ctx) return;
-          const frame = ctx.createImageData(NOISE_W, NOISE_H);
+          if (!ctx || !w || !h) return;
+          const frame = ctx.createImageData(w, h);
           for (let i = 0; i < frame.data.length; i += 4) {
             const v = Math.random() * 255;
             frame.data[i] = v;
@@ -255,7 +257,12 @@ const localBusinessSchema = {
           ctx.putImageData(frame, 0, 0);
         }
 
+        resize();
         drawFrame();
+        window.addEventListener('resize', () => {
+          resize();
+          drawFrame();
+        });
         if (!reduceMotion) {
           setInterval(drawFrame, 90);
         }
@@ -263,6 +270,12 @@ const localBusinessSchema = {
     </script>
 
     <style>
+      /* In-page anchor jumps (hero CTA, nav "Work" link) animate instead of
+         instantly cutting to position. */
+      :global(html) { scroll-behavior: smooth; }
+      @media (prefers-reduced-motion: reduce) {
+        :global(html) { scroll-behavior: auto; }
+      }
       body {
         margin: 0;
         font-family: var(--font-sans);
@@ -329,10 +342,11 @@ const localBusinessSchema = {
       .featured-work > .content { position: relative; z-index: 1; }
       /* Analog-TV static behind the section — a new stylistic addition (the
          real site has no video here, just a flat gray layer), built as a
-         small canvas upscaled with pixelated rendering rather than a video
-         file, so there's no asset to source or host. Kept low-opacity so
-         text stays legible; a static (non-animating) frame is drawn when
-         the visitor prefers reduced motion. */
+         canvas redrawn with random noise rather than a video file, so
+         there's no asset to source or host. Smooth (non-pixelated) scaling
+         keeps the grain fine rather than blocky. Kept low-opacity so text
+         stays legible; a static (non-animating) frame is drawn when the
+         visitor prefers reduced motion. */
       .fw-static {
         position: absolute;
         inset: 0;
@@ -340,7 +354,6 @@ const localBusinessSchema = {
         width: 100%;
         height: 100%;
         opacity: 0.06;
-        image-rendering: pixelated;
         pointer-events: none;
       }
       .fw-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
@@ -362,6 +375,19 @@ const localBusinessSchema = {
       /* RECENT POSTS */
       .recent-posts { background: var(--white); padding: var(--section-gap-home) 0; }
       .ig-wrap { margin-top: var(--space-5); }
+      /* Elfsight injects its own markup at runtime (real classes read from
+         the live embed via devtools), so Astro's scoped CSS can't reach it
+         — these need :global() and !important to beat the widget's own
+         inline styles. Adds a visible border + gutter around each tile. */
+      .ig-wrap :global(.eapps-instagram-feed-posts-item) {
+        border: 1px solid var(--border) !important;
+      }
+      .ig-wrap :global(.eapps-instagram-feed-posts-inner) {
+        margin: -10px !important;
+      }
+      .ig-wrap :global(.eapps-instagram-feed-posts-item) {
+        margin: 10px !important;
+      }
 
       @media (max-width: 760px) {
         .service-cols { grid-template-columns: 1fr; gap: var(--space-6); }
