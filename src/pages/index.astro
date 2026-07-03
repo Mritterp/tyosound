@@ -158,14 +158,19 @@ const localBusinessSchema = {
           This pulls from src/data/instagram.json instead; see that file's
           _note and docs/EDITING.md for how to add a new post.
         -->
-        <div class="ig-wrap">
+        <div class="ig-wrap" data-ig-wrap>
           <div class="ig-grid">
-            {instagramData.posts.map((post) => (
-              <a class="ig-tile" href={instagramData.profileUrl} target="_blank" rel="noopener">
+            {instagramData.posts.map((post, i) => (
+              <a class="ig-tile" data-ig-tile data-hidden={i >= 4 ? 'true' : undefined} href={instagramData.profileUrl} target="_blank" rel="noopener">
                 <img src={`${base}${post.image}`} alt={post.alt} loading="lazy" />
               </a>
             ))}
           </div>
+          {instagramData.posts.length > 4 && (
+            <div class="ig-more-wrap">
+              <button class="ig-more-btn" data-ig-load-more>Load more</button>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -250,6 +255,22 @@ const localBusinessSchema = {
         // initial: mark filtered-out rows hidden (server rendered all as visible);
         // everything stays collapsed — applyFilter no longer auto-opens a row.
         rows.forEach((r) => r.setAttribute('data-hidden', String(r.dataset.cat !== defaultCat)));
+      }
+    </script>
+
+    <script>
+      // Recent Posts: starts at 4 tiles, "Load more" reveals 4 more per
+      // click (already server-rendered, just toggling data-hidden — same
+      // pattern as the Featured Work filter) until none are left hidden.
+      const igWrap = document.querySelector('[data-ig-wrap]');
+      if (igWrap) {
+        const tiles = [...igWrap.querySelectorAll('[data-ig-tile]')];
+        const moreBtn = igWrap.querySelector('[data-ig-load-more]');
+        moreBtn?.addEventListener('click', () => {
+          const hidden = tiles.filter((t) => t.dataset.hidden === 'true');
+          hidden.slice(0, 4).forEach((t) => t.removeAttribute('data-hidden'));
+          if (hidden.length <= 4) moreBtn.style.display = 'none';
+        });
       }
     </script>
 
@@ -462,6 +483,23 @@ const localBusinessSchema = {
         transition: opacity var(--dur-base);
       }
       .ig-tile:hover img { opacity: var(--hover-opacity); }
+      .ig-tile[data-hidden='true'] { display: none; }
+      .ig-more-wrap { display: flex; justify-content: center; margin-top: var(--space-6); }
+      .ig-more-btn {
+        font-family: var(--font-sans);
+        font-weight: var(--weight-medium);
+        font-size: var(--text-sm);
+        letter-spacing: var(--tracking-wide);
+        text-transform: uppercase;
+        padding: 12px 26px;
+        border-radius: var(--radius-md);
+        border: var(--border-rule) solid var(--black);
+        background: transparent;
+        color: var(--black);
+        cursor: pointer;
+        transition: background var(--dur-fast), color var(--dur-fast);
+      }
+      .ig-more-btn:hover { background: var(--black); color: var(--white); }
 
       @media (max-width: 760px) {
         .service-cols { grid-template-columns: 1fr; gap: var(--space-6); }
