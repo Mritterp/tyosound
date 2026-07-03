@@ -5,9 +5,13 @@
 //
 // Hover behavior and font-size/letter-spacing/padding are pulled directly
 // from the live Webflow site's real "link-button" style (via the Data API,
-// not guessed): on hover a white panel rises from the bottom to fill the
-// link and the ink flips to black — a real fill-inversion, consistent with
-// the design system's stated "never a hue change" hover rule.
+// not guessed): on hover a panel rises from the bottom to fill the link
+// and the ink flips — a real fill-inversion, consistent with the design
+// system's stated "never a hue change" hover rule. The fill/ink direction
+// is theme-aware: white-fill/black-text on a dark background (onLight
+// false, e.g. the black "What We Do" section), black-fill/white-text on a
+// light background (onLight true, e.g. the white Equipment page) — a
+// white fill on an already-white page would be invisible.
 interface Props {
   href?: string;
   onLight?: boolean;
@@ -50,16 +54,27 @@ const { href = '#', onLight = true, class: className } = Astro.props;
     position: absolute;
     inset: 0;
     z-index: 0;
-    background: var(--white);
+    background: var(--black);
     transform: translateY(100%);
     transition: transform var(--dur-base) var(--ease-out);
+  }
+  .text-link[data-on-light='false'] .text-link-fill {
+    background: var(--white);
   }
   .text-link:hover,
   .text-link:focus-visible {
     border-bottom-color: var(--black);
   }
+  .text-link[data-on-light='false']:hover,
+  .text-link[data-on-light='false']:focus-visible {
+    border-bottom-color: var(--white);
+  }
   .text-link:hover .text-link-label,
   .text-link:focus-visible .text-link-label {
+    color: var(--white);
+  }
+  .text-link[data-on-light='false']:hover .text-link-label,
+  .text-link[data-on-light='false']:focus-visible .text-link-label {
     color: var(--black);
   }
   .text-link:hover .text-link-fill,
