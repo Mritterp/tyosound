@@ -21,8 +21,8 @@ const services = [
     title: 'Production Sound',
     cat: 'production',
     body: 'Interviews, documentaries, reality television, feature films, and so much more.',
-    linkLabel: 'Check out our equipment',
-    linkHref: `${base}/equipment`,
+    // "Check out our equipment" CTA removed here — the hero's "Equipment
+    // rental" button already covers it, right above this section.
   },
   {
     index: 2,
@@ -226,14 +226,14 @@ const localBusinessSchema = {
           }
         }
 
-        const featuredWorkSection = document.getElementById('featured-work');
+        const servicesSection = document.getElementById('services');
         cols.forEach((c) => {
           const selectBtn = c.querySelector('.col-select');
           selectBtn?.addEventListener('click', () => {
             applyFilter(c.dataset.cat);
-            // Bring Featured Work to the top of the viewport so the newly
-            // filtered list (and the channel-change effect) is fully visible.
-            featuredWorkSection?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+            // Bring What We Do to the top of the viewport so all three
+            // columns are fully visible regardless of scroll position.
+            servicesSection?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
           });
         });
 
