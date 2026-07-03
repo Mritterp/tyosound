@@ -226,9 +226,15 @@ const localBusinessSchema = {
           }
         }
 
+        const featuredWorkSection = document.getElementById('featured-work');
         cols.forEach((c) => {
           const selectBtn = c.querySelector('.col-select');
-          selectBtn?.addEventListener('click', () => applyFilter(c.dataset.cat));
+          selectBtn?.addEventListener('click', () => {
+            applyFilter(c.dataset.cat);
+            // Bring Featured Work to the top of the viewport so the newly
+            // filtered list (and the channel-change effect) is fully visible.
+            featuredWorkSection?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+          });
         });
 
         rows.forEach((r) => {

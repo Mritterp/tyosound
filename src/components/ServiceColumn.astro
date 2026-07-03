@@ -27,6 +27,7 @@ const { index, title, body, cat, selected = false, linkLabel, linkHref } = Astro
     <span class="idx">{String(index).padStart(2, '0')}</span>
     <span class="title">{title}</span>
     <span class="body">{body}</span>
+    <span class="cue" aria-hidden="true"><span class="cue-text">See this work ↓</span></span>
   </button>
   {linkLabel && linkHref && (
     <TextLink href={linkHref} onLight={false} class="col-link">{linkLabel}</TextLink>
@@ -83,5 +84,58 @@ const { index, title, body, cat, selected = false, linkLabel, linkHref } = Astro
   }
   .col :global(.col-link) {
     margin-top: var(--space-2);
+  }
+
+  /* Hover-only "See this work" cue, from a Claude Design supplied snippet.
+     Pure CSS: hovering a non-selected column reveals it and plays a
+     one-shot chromatic-aberration glitch — no JS needed for the
+     "replay every hover" behavior, since a :hover-scoped animation
+     naturally restarts each time the hover state re-triggers. The red/
+     cyan split colors are a deliberate accent, another confirmed
+     exception to the brand's monochrome rule (same category as the
+     Featured Work title's blue hover) — implemented as supplied. */
+  .cue {
+    margin-top: var(--space-1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard);
+  }
+  .col-select:hover .cue {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .col[data-selected='true'] .cue {
+    display: none;
+  }
+  .cue-text {
+    display: inline-block;
+    transform-origin: center;
+    will-change: transform, filter, letter-spacing;
+  }
+  .col-select:hover .cue-text {
+    animation: tyoSvcCueGlitch 0.6s steps(1, end) 1 both;
+  }
+  @keyframes tyoSvcCueGlitch {
+    0%   { letter-spacing: 0.16em;  transform: translateX(-2px); filter: brightness(1.4);
+           text-shadow: -1.5px 0 rgba(255, 0, 70, .7), 1.5px 0 rgba(0, 240, 220, .7); }
+    18%  { letter-spacing: -0.02em; transform: translateX(2px);  filter: brightness(1.08);
+           text-shadow: 2px 0 rgba(255, 0, 70, .6), -2px 0 rgba(0, 240, 220, .6); }
+    38%  { letter-spacing: 0.1em;   transform: translateX(-1px);
+           text-shadow: -1px 0 rgba(255, 0, 70, .45), 1px 0 rgba(0, 240, 220, .45); }
+    58%  { letter-spacing: 0.04em;  transform: none;
+           text-shadow: 0.5px 0 rgba(255, 0, 70, .3), -0.5px 0 rgba(0, 240, 220, .3); }
+    78%  { letter-spacing: 0.06em;  transform: none; text-shadow: none; filter: none; }
+    100% { letter-spacing: 0.06em;  transform: none; text-shadow: none; filter: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .col-select:hover .cue-text { animation: none; }
   }
 </style>
