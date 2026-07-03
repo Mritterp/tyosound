@@ -31,7 +31,7 @@ const description = 'Professional audio equipment for rent from TYO Sound — mi
           <Eyebrow muted>Equipment Rental</Eyebrow>
           <h1 class="eq-title">Equipment<br />Rental</h1>
           <p class="eq-sub">Whether it's mixing live events or run and gun TV, we've got you covered.</p>
-          <TextLink href={`${base}/#contact`}>Contact for availability</TextLink>
+          <TextLink href="#contact">Contact for availability</TextLink>
         </div>
         <div class="eq-hero-photo">
           <img src={`${base}/img/equipment-action.png`} alt="Sound mixer wearing a production sound bag rig" />
@@ -53,6 +53,13 @@ const description = 'Professional audio equipment for rent from TYO Sound — mi
     <SiteFooter />
 
     <style>
+      /* "Contact for availability" now anchors to this page's own footer
+         (was a cross-page link to the home page's #contact) — smooth
+         scroll matches the home page's behavior. */
+      :global(html) { scroll-behavior: smooth; }
+      @media (prefers-reduced-motion: reduce) {
+        :global(html) { scroll-behavior: auto; }
+      }
       body { margin: 0; font-family: var(--font-sans); background: var(--bg-page); }
       .content { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--page-gutter); }
 
