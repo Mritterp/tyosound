@@ -318,29 +318,50 @@ const localBusinessSchema = {
       }
 
       // Channel-change burst: a quick real noise burst (screen-blended so
-      // it lightens rather than blacks out) plus a horizontal jitter/
-      // brightness-flicker on the Featured Work list itself. Exposed on
-      // window so the filter-switch handler above can call it.
+      // it lightens rather than blacks out), held flat, then wiped off —
+      // rather than snapping to invisible — using one of a few randomized
+      // direction/speed variants so repeated switches don't feel identical.
+      // A horizontal jitter/brightness-flicker plays on the Featured Work
+      // list itself throughout. Exposed on window so the filter-switch
+      // handler above can call it.
       const burstCanvas = document.querySelector('[data-tv-burst]');
       const burstOverlay = document.querySelector('[data-tv-burst-overlay]');
       const fwList = document.querySelector('[data-fw-list]');
-      const BURST_DUR = 300;
+      const BURST_HOLD_DUR = 200; // flat full-static hold before the wipe-off starts
       const BURST_OVERLAY_OPACITY = 0.13;
+      const WIPE_VARIANTS = [
+        { name: 'down-a', duration: 240 },
+        { name: 'up-a', duration: 240 },
+        { name: 'down-b', duration: 340 },
+        { name: 'up-b', duration: 180 },
+      ];
 
       window.playChannelChange = function playChannelChange() {
         if (reduceMotionStatic || !(burstCanvas instanceof HTMLCanvasElement) || !burstOverlay || !fwList) return;
+        const variant = WIPE_VARIANTS[Math.floor(Math.random() * WIPE_VARIANTS.length)];
+
+        burstOverlay.removeAttribute('data-wipe');
         burstOverlay.style.opacity = '1';
         burstCanvas.style.opacity = String(BURST_OVERLAY_OPACITY);
         fwList.classList.remove('fw-v-js');
-        void fwList.offsetWidth; // restart the animation if it's still mid-run
+        void fwList.offsetWidth; // restart the animations if still mid-run
         fwList.classList.add('fw-v-js');
         const stopBurst = runStatic(burstCanvas, { fps: 60, playing: true });
+
+        setTimeout(() => {
+          // Wipe-off starts: the CSS animation for this variant name
+          // carries the clip-path from fully visible to fully clipped.
+          burstOverlay.style.setProperty('--wipe-duration', variant.duration + 'ms');
+          burstOverlay.setAttribute('data-wipe', variant.name);
+        }, BURST_HOLD_DUR);
+
         setTimeout(() => {
           burstOverlay.style.opacity = '0';
+          burstOverlay.removeAttribute('data-wipe');
           burstCanvas.style.opacity = '0';
           fwList.classList.remove('fw-v-js');
           stopBurst();
-        }, BURST_DUR);
+        }, BURST_HOLD_DUR + variant.duration);
       };
     </script>
 
@@ -456,6 +477,27 @@ const localBusinessSchema = {
         height: 100%;
         opacity: 0;
         mix-blend-mode: screen;
+      }
+      /* Wipe-off, instead of the static just vanishing: clip-path sweeps
+         the visible region down to nothing (top-to-bottom retreat) or up
+         to nothing (bottom-to-top retreat). Four variants — two directions
+         at two different speeds each — picked at random per trigger (JS
+         sets --wipe-duration and the data-wipe attribute). */
+      .fw-burst-overlay { clip-path: inset(0 0 0 0); }
+      @keyframes fw-wipe-down {
+        from { clip-path: inset(0 0 0 0); }
+        to   { clip-path: inset(100% 0 0 0); }
+      }
+      @keyframes fw-wipe-up {
+        from { clip-path: inset(0 0 0 0); }
+        to   { clip-path: inset(0 0 100% 0); }
+      }
+      .fw-burst-overlay[data-wipe='down-a'] { animation: fw-wipe-down var(--wipe-duration, 240ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='up-a']   { animation: fw-wipe-up var(--wipe-duration, 240ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='down-b'] { animation: fw-wipe-down var(--wipe-duration, 340ms) ease-in-out forwards; }
+      .fw-burst-overlay[data-wipe='up-b']   { animation: fw-wipe-up var(--wipe-duration, 180ms) ease-in forwards; }
+      @media (prefers-reduced-motion: reduce) {
+        .fw-burst-overlay[data-wipe] { animation: none; }
       }
       @keyframes fwJs {
         0%   { transform: translateX(-3px); filter: brightness(1.08); opacity: .9; }
