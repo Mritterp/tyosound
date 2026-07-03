@@ -119,7 +119,9 @@ const localBusinessSchema = {
     <!-- FEATURED WORK -->
     <section class="featured-work" id="featured-work">
       <canvas class="fw-static" data-tv-static aria-hidden="true"></canvas>
-      <div class="channel-flash" data-channel-flash aria-hidden="true"></div>
+      <div class="fw-burst-overlay" data-tv-burst-overlay aria-hidden="true">
+        <canvas class="fw-burst-canvas" data-tv-burst></canvas>
+      </div>
       <div class="content">
         <div class="fw-header">
           <h2 class="fw-title">Featured Work</h2>
@@ -181,7 +183,6 @@ const localBusinessSchema = {
       const colsWrap = document.querySelector('[data-service-cols]');
       const listWrap = document.querySelector('[data-fw-list]');
       const catLabel = document.querySelector('[data-fw-cat-label]');
-      const channelFlash = document.querySelector('[data-channel-flash]');
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (colsWrap && listWrap) {
         const cols = [...colsWrap.querySelectorAll('[data-service-col]')];
@@ -206,18 +207,12 @@ const localBusinessSchema = {
           rows.forEach((r) => setOpen(r, false));
         }
 
-        // "Changing the channel": a brief static/flash plays over Featured
-        // Work, with the actual row swap happening hidden underneath it —
-        // mimicking an old TV's blackout-then-resync when you flip channels.
+        // "Changing the channel": the row swap happens immediately, and a
+        // noise burst + jitter (playChannelChange, defined below) plays
+        // alongside it as a decorative accompaniment.
         function applyFilter(cat) {
-          if (channelFlash && !reduceMotion) {
-            channelFlash.classList.remove('flashing');
-            void channelFlash.offsetWidth; // restart the animation
-            channelFlash.classList.add('flashing');
-            setTimeout(() => swapFilter(cat), 150);
-          } else {
-            swapFilter(cat);
-          }
+          swapFilter(cat);
+          if (window.playChannelChange) window.playChannelChange();
         }
 
         function setOpen(row, open) {
@@ -275,53 +270,78 @@ const localBusinessSchema = {
     </script>
 
     <script>
-      // Analog-TV static behind Featured Work: draws random grayscale noise
-      // at (roughly) the canvas's real rendered resolution every frame, for
-      // fine film-grain static rather than large blocky pixels — no video
-      // file to ship/host.
-      const staticCanvas = document.querySelector('[data-tv-static]');
-      if (staticCanvas instanceof HTMLCanvasElement) {
-        const ctx = staticCanvas.getContext('2d');
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        // Matches real device pixels (capped at 2x) for genuinely fine
-        // grain — bumped up from an earlier 0.5x pass that still looked
-        // blocky. Still cheap: it's a low-opacity decorative layer redrawn
-        // at ~11fps, not 60fps.
-        const RESOLUTION_SCALE = Math.min(window.devicePixelRatio || 1, 2);
-        let w = 0;
-        let h = 0;
-
+      // Shared static-noise painter — draws random grayscale noise into a
+      // canvas sized to its own real rendered resolution (capped at 2x
+      // devicePixelRatio) every frame. Used both for the continuous
+      // low-opacity background behind Featured Work and for the short
+      // burst that plays on a service-filter change. No video file to
+      // ship/host either way.
+      function runStatic(canvas, opts) {
+        opts = opts || {};
+        const fps = opts.fps || 90;
+        const ctx = canvas.getContext('2d');
+        const scale = Math.min(window.devicePixelRatio || 1, 2);
+        let w = 0, h = 0, timer = null, ro = null;
         function resize() {
-          const rect = staticCanvas.getBoundingClientRect();
-          w = Math.max(1, Math.round(rect.width * RESOLUTION_SCALE));
-          h = Math.max(1, Math.round(rect.height * RESOLUTION_SCALE));
-          staticCanvas.width = w;
-          staticCanvas.height = h;
+          const r = canvas.getBoundingClientRect();
+          w = Math.max(1, Math.round(r.width * scale));
+          h = Math.max(1, Math.round(r.height * scale));
+          canvas.width = w; canvas.height = h;
         }
-
-        function drawFrame() {
+        function draw() {
           if (!ctx || !w || !h) return;
           const frame = ctx.createImageData(w, h);
-          for (let i = 0; i < frame.data.length; i += 4) {
+          const d = frame.data;
+          for (let i = 0; i < d.length; i += 4) {
             const v = Math.random() * 255;
-            frame.data[i] = v;
-            frame.data[i + 1] = v;
-            frame.data[i + 2] = v;
-            frame.data[i + 3] = 255;
+            d[i] = v; d[i + 1] = v; d[i + 2] = v; d[i + 3] = 255;
           }
           ctx.putImageData(frame, 0, 0);
         }
-
-        resize();
-        drawFrame();
-        window.addEventListener('resize', () => {
-          resize();
-          drawFrame();
-        });
-        if (!reduceMotion) {
-          setInterval(drawFrame, 90);
+        resize(); draw();
+        if (typeof ResizeObserver !== 'undefined') {
+          ro = new ResizeObserver(() => { resize(); draw(); });
+          ro.observe(canvas);
         }
+        if (opts.playing !== false) timer = setInterval(draw, 1000 / fps);
+        return function stop() { if (timer) clearInterval(timer); if (ro) ro.disconnect(); };
       }
+
+      const reduceMotionStatic = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Continuous background static — one still frame when reduced motion
+      // is preferred (playing: false skips the interval but resize()+draw()
+      // still run once), otherwise a slow ~11fps loop at low opacity.
+      const bgCanvas = document.querySelector('[data-tv-static]');
+      if (bgCanvas instanceof HTMLCanvasElement) {
+        runStatic(bgCanvas, { fps: 11, playing: !reduceMotionStatic });
+      }
+
+      // Channel-change burst: a quick real noise burst (screen-blended so
+      // it lightens rather than blacks out) plus a horizontal jitter/
+      // brightness-flicker on the Featured Work list itself. Exposed on
+      // window so the filter-switch handler above can call it.
+      const burstCanvas = document.querySelector('[data-tv-burst]');
+      const burstOverlay = document.querySelector('[data-tv-burst-overlay]');
+      const fwList = document.querySelector('[data-fw-list]');
+      const BURST_DUR = 300;
+      const BURST_OVERLAY_OPACITY = 0.13;
+
+      window.playChannelChange = function playChannelChange() {
+        if (reduceMotionStatic || !(burstCanvas instanceof HTMLCanvasElement) || !burstOverlay || !fwList) return;
+        burstOverlay.style.opacity = '1';
+        burstCanvas.style.opacity = String(BURST_OVERLAY_OPACITY);
+        fwList.classList.remove('fw-v-js');
+        void fwList.offsetWidth; // restart the animation if it's still mid-run
+        fwList.classList.add('fw-v-js');
+        const stopBurst = runStatic(burstCanvas, { fps: 60, playing: true });
+        setTimeout(() => {
+          burstOverlay.style.opacity = '0';
+          burstCanvas.style.opacity = '0';
+          fwList.classList.remove('fw-v-js');
+          stopBurst();
+        }, BURST_DUR);
+      };
     </script>
 
     <style>
@@ -416,34 +436,40 @@ const localBusinessSchema = {
         opacity: 0.06;
         pointer-events: none;
       }
-      /* "Changing the channel" flash, played over the section when the
-         service filter changes — a quick static/blackout burst with the
-         actual row swap happening hidden underneath it (JS above). */
-      .channel-flash {
+      /* "Changing the channel": a real noise burst (screen-blended, so it
+         lightens rather than blacks out) plus a horizontal jitter on the
+         Featured Work list itself, played when the service filter changes.
+         The row swap happens immediately — this is a decorative
+         accompaniment, not a mask for a delayed swap. */
+      .fw-burst-overlay {
         position: absolute;
         inset: 0;
-        z-index: 10;
+        z-index: 5;
         pointer-events: none;
+        overflow: hidden;
         opacity: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          rgba(255, 255, 255, 0.95) 0px,
-          rgba(255, 255, 255, 0.95) 1px,
-          rgba(20, 20, 20, 0.92) 1px,
-          rgba(20, 20, 20, 0.92) 3px
-        );
       }
-      .channel-flash.flashing {
-        animation: channel-flash-anim 0.55s steps(1, end);
+      .fw-burst-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        mix-blend-mode: screen;
       }
-      @keyframes channel-flash-anim {
-        0% { opacity: 0; }
-        12% { opacity: 1; }
-        28% { opacity: 0.15; }
-        42% { opacity: 1; }
-        58% { opacity: 0; }
-        72% { opacity: 0.7; }
-        100% { opacity: 0; }
+      @keyframes fwJs {
+        0%   { transform: translateX(-3px); filter: brightness(1.08); opacity: .9; }
+        25%  { transform: translateX(2px); }
+        50%  { transform: translateX(-1.5px); opacity: 1; }
+        75%  { transform: translateX(1px); }
+        100% { transform: translateX(0); filter: none; }
+      }
+      [data-fw-list].fw-v-js {
+        animation: fwJs 0.3s ease-out both;
+        will-change: transform, filter;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        [data-fw-list].fw-v-js { animation: none; }
       }
       .fw-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
       /* Real size pulled from the live site's "home__featuredwork-header"
