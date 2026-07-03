@@ -318,34 +318,38 @@ const localBusinessSchema = {
       }
 
       // Channel-change burst: a quick real noise burst (screen-blended so
-      // it lightens rather than blacks out), held flat, then wiped off —
-      // rather than snapping to invisible — using one of a few randomized
-      // direction/speed variants so repeated switches don't feel identical.
-      // A horizontal jitter/brightness-flicker plays on the Featured Work
-      // list itself throughout. Exposed on window so the filter-switch
-      // handler above can call it.
+      // it lightens rather than blacks out), held flat, then wiped off
+      // horizontally — rather than snapping to invisible — using one of a
+      // few randomized direction/speed variants so repeated switches don't
+      // feel identical. A jitter/brightness-flicker plays on the Featured
+      // Work list itself throughout, independently randomized between a
+      // few shake intensities (the original ±3px version is kept as the
+      // most dynamic tier). Exposed on window so the filter-switch handler
+      // above can call it.
       const burstCanvas = document.querySelector('[data-tv-burst]');
       const burstOverlay = document.querySelector('[data-tv-burst-overlay]');
       const fwList = document.querySelector('[data-fw-list]');
-      const BURST_HOLD_DUR = 200; // flat full-static hold before the wipe-off starts
+      const BURST_HOLD_DUR = 160; // flat full-static hold before the wipe-off starts
       const BURST_OVERLAY_OPACITY = 0.13;
       const WIPE_VARIANTS = [
-        { name: 'down-a', duration: 240 },
-        { name: 'up-a', duration: 240 },
-        { name: 'down-b', duration: 340 },
-        { name: 'up-b', duration: 180 },
+        { name: 'right-a', duration: 200 },
+        { name: 'left-a', duration: 200 },
+        { name: 'right-b', duration: 280 },
+        { name: 'left-b', duration: 150 },
       ];
+      const SHAKE_CLASSES = ['fw-v-js-soft', 'fw-v-js-med', 'fw-v-js'];
 
       window.playChannelChange = function playChannelChange() {
         if (reduceMotionStatic || !(burstCanvas instanceof HTMLCanvasElement) || !burstOverlay || !fwList) return;
         const variant = WIPE_VARIANTS[Math.floor(Math.random() * WIPE_VARIANTS.length)];
+        const shakeClass = SHAKE_CLASSES[Math.floor(Math.random() * SHAKE_CLASSES.length)];
 
         burstOverlay.removeAttribute('data-wipe');
         burstOverlay.style.opacity = '1';
         burstCanvas.style.opacity = String(BURST_OVERLAY_OPACITY);
-        fwList.classList.remove('fw-v-js');
+        SHAKE_CLASSES.forEach((c) => fwList.classList.remove(c));
         void fwList.offsetWidth; // restart the animations if still mid-run
-        fwList.classList.add('fw-v-js');
+        fwList.classList.add(shakeClass);
         const stopBurst = runStatic(burstCanvas, { fps: 60, playing: true });
 
         setTimeout(() => {
@@ -359,7 +363,7 @@ const localBusinessSchema = {
           burstOverlay.style.opacity = '0';
           burstOverlay.removeAttribute('data-wipe');
           burstCanvas.style.opacity = '0';
-          fwList.classList.remove('fw-v-js');
+          fwList.classList.remove(shakeClass);
           stopBurst();
         }, BURST_HOLD_DUR + variant.duration);
       };
@@ -479,26 +483,29 @@ const localBusinessSchema = {
         mix-blend-mode: screen;
       }
       /* Wipe-off, instead of the static just vanishing: clip-path sweeps
-         the visible region down to nothing (top-to-bottom retreat) or up
-         to nothing (bottom-to-top retreat). Four variants — two directions
-         at two different speeds each — picked at random per trigger (JS
-         sets --wipe-duration and the data-wipe attribute). */
+         the visible region off to the right or off to the left. Four
+         variants — two directions at two different speeds each — picked
+         at random per trigger (JS sets --wipe-duration and the data-wipe
+         attribute). */
       .fw-burst-overlay { clip-path: inset(0 0 0 0); }
-      @keyframes fw-wipe-down {
+      @keyframes fw-wipe-right {
         from { clip-path: inset(0 0 0 0); }
-        to   { clip-path: inset(100% 0 0 0); }
+        to   { clip-path: inset(0 0 0 100%); }
       }
-      @keyframes fw-wipe-up {
+      @keyframes fw-wipe-left {
         from { clip-path: inset(0 0 0 0); }
-        to   { clip-path: inset(0 0 100% 0); }
+        to   { clip-path: inset(0 100% 0 0); }
       }
-      .fw-burst-overlay[data-wipe='down-a'] { animation: fw-wipe-down var(--wipe-duration, 240ms) ease-out forwards; }
-      .fw-burst-overlay[data-wipe='up-a']   { animation: fw-wipe-up var(--wipe-duration, 240ms) ease-out forwards; }
-      .fw-burst-overlay[data-wipe='down-b'] { animation: fw-wipe-down var(--wipe-duration, 340ms) ease-in-out forwards; }
-      .fw-burst-overlay[data-wipe='up-b']   { animation: fw-wipe-up var(--wipe-duration, 180ms) ease-in forwards; }
+      .fw-burst-overlay[data-wipe='right-a'] { animation: fw-wipe-right var(--wipe-duration, 200ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='left-a']  { animation: fw-wipe-left var(--wipe-duration, 200ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='right-b'] { animation: fw-wipe-right var(--wipe-duration, 280ms) ease-in-out forwards; }
+      .fw-burst-overlay[data-wipe='left-b']  { animation: fw-wipe-left var(--wipe-duration, 150ms) ease-in forwards; }
       @media (prefers-reduced-motion: reduce) {
         .fw-burst-overlay[data-wipe] { animation: none; }
       }
+      /* Three shake intensities, randomly picked per trigger — fwJs (the
+         original) stays the most dynamic; the other two are milder scaled-
+         down versions so repeated switches don't all feel the same. */
       @keyframes fwJs {
         0%   { transform: translateX(-3px); filter: brightness(1.08); opacity: .9; }
         25%  { transform: translateX(2px); }
@@ -506,12 +513,34 @@ const localBusinessSchema = {
         75%  { transform: translateX(1px); }
         100% { transform: translateX(0); filter: none; }
       }
+      @keyframes fwJsMed {
+        0%   { transform: translateX(-1.6px); filter: brightness(1.04); opacity: .94; }
+        25%  { transform: translateX(1.1px); }
+        50%  { transform: translateX(-0.8px); opacity: 1; }
+        75%  { transform: translateX(0.5px); }
+        100% { transform: translateX(0); filter: none; }
+      }
+      @keyframes fwJsSoft {
+        0%   { transform: translateX(-0.75px); filter: brightness(1.015); opacity: .98; }
+        50%  { transform: translateX(0.5px); }
+        100% { transform: translateX(0); filter: none; }
+      }
       [data-fw-list].fw-v-js {
         animation: fwJs 0.3s ease-out both;
         will-change: transform, filter;
       }
+      [data-fw-list].fw-v-js-med {
+        animation: fwJsMed 0.3s ease-out both;
+        will-change: transform, filter;
+      }
+      [data-fw-list].fw-v-js-soft {
+        animation: fwJsSoft 0.3s ease-out both;
+        will-change: transform, filter;
+      }
       @media (prefers-reduced-motion: reduce) {
-        [data-fw-list].fw-v-js { animation: none; }
+        [data-fw-list].fw-v-js,
+        [data-fw-list].fw-v-js-med,
+        [data-fw-list].fw-v-js-soft { animation: none; }
       }
       .fw-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
       /* Real size pulled from the live site's "home__featuredwork-header"
