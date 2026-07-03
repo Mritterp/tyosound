@@ -331,11 +331,12 @@ const localBusinessSchema = {
       const fwList = document.querySelector('[data-fw-list]');
       const BURST_HOLD_DUR = 160; // flat full-static hold before the wipe-off starts
       const BURST_OVERLAY_OPACITY = 0.13;
+      // At least 2x faster than the previous pass on every variant.
       const WIPE_VARIANTS = [
-        { name: 'right-a', duration: 200 },
-        { name: 'left-a', duration: 200 },
-        { name: 'right-b', duration: 280 },
-        { name: 'left-b', duration: 150 },
+        { name: 'right-a', duration: 90 },
+        { name: 'left-a', duration: 90 },
+        { name: 'right-b', duration: 120 },
+        { name: 'left-b', duration: 65 },
       ];
       const SHAKE_CLASSES = ['fw-v-js-soft', 'fw-v-js-med', 'fw-v-js'];
 
@@ -496,10 +497,10 @@ const localBusinessSchema = {
         from { clip-path: inset(0 0 0 0); }
         to   { clip-path: inset(0 100% 0 0); }
       }
-      .fw-burst-overlay[data-wipe='right-a'] { animation: fw-wipe-right var(--wipe-duration, 200ms) ease-out forwards; }
-      .fw-burst-overlay[data-wipe='left-a']  { animation: fw-wipe-left var(--wipe-duration, 200ms) ease-out forwards; }
-      .fw-burst-overlay[data-wipe='right-b'] { animation: fw-wipe-right var(--wipe-duration, 280ms) ease-in-out forwards; }
-      .fw-burst-overlay[data-wipe='left-b']  { animation: fw-wipe-left var(--wipe-duration, 150ms) ease-in forwards; }
+      .fw-burst-overlay[data-wipe='right-a'] { animation: fw-wipe-right var(--wipe-duration, 90ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='left-a']  { animation: fw-wipe-left var(--wipe-duration, 90ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='right-b'] { animation: fw-wipe-right var(--wipe-duration, 120ms) ease-in-out forwards; }
+      .fw-burst-overlay[data-wipe='left-b']  { animation: fw-wipe-left var(--wipe-duration, 65ms) ease-in forwards; }
       @media (prefers-reduced-motion: reduce) {
         .fw-burst-overlay[data-wipe] { animation: none; }
       }
