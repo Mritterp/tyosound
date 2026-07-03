@@ -27,17 +27,15 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
   </button>
 
   <div class="expand">
-    <div class="expand-inner">
-      <div class="media">
-        {youtubeId && (
-          <iframe
-            title={title}
-            data-youtube-src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        )}
-      </div>
+    <div class="media">
+      {youtubeId && (
+        <iframe
+          title={title}
+          data-youtube-src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      )}
     </div>
   </div>
 </div>
@@ -141,13 +139,17 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
     color: var(--text-muted);
   }
 
+  /* Height is set to an explicit px value by JS (measured via scrollHeight)
+     rather than the grid-template-rows: 0fr/1fr trick — that technique
+     interpolates grid track sizing, which several browsers animate
+     unevenly/janky. A plain height transition between two real pixel
+     values is simple linear interpolation and renders far smoother. */
   .expand {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--dur-slow) var(--ease-out);
+    height: 0;
+    overflow: hidden;
+    transition: height var(--dur-slow) var(--ease-out);
+    will-change: height;
   }
-  .row[data-open='true'] .expand { grid-template-rows: 1fr; }
-  .expand-inner { overflow: hidden; }
   .media {
     position: relative;
     width: 100%;
@@ -157,7 +159,20 @@ const { id, title, client, role, cat, youtubeId, open = false } = Astro.props;
     overflow: hidden;
     margin-bottom: var(--space-6);
   }
-  .media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+  /* The box is sized by aspect-ratio immediately, independent of whether
+     the YouTube iframe has actually loaded yet — so the expand animation
+     is never blocked on network timing. The iframe itself fades in once
+     ready (JS toggles opacity on 'load') instead of popping in abruptly
+     mid-animation. */
+  .media iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 
   /* filtered-out rows (different service category) are hidden entirely */
   .row[data-hidden='true'] { display: none; }

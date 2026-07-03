@@ -217,12 +217,32 @@ const localBusinessSchema = {
 
         function setOpen(row, open) {
           row.setAttribute('data-open', String(open));
+          const expand = row.querySelector('.expand');
           const iframe = row.querySelector('iframe[data-youtube-src]');
           const btn = row.querySelector('[data-work-toggle]');
           if (btn) btn.setAttribute('aria-expanded', String(open));
+          if (expand) {
+            // Explicit pixel height (measured via scrollHeight, which is
+            // accurate even while the element is visually collapsed) —
+            // smoother than animating grid-template-rows, and sized purely
+            // by the media box's aspect-ratio, so it's never blocked on
+            // the iframe actually finishing its network load.
+            expand.style.height = open ? expand.scrollHeight + 'px' : '0px';
+          }
           if (iframe) {
-            if (open) iframe.src = iframe.dataset.youtubeSrc;
-            else iframe.removeAttribute('src');
+            if (open) {
+              iframe.style.opacity = '0';
+              iframe.onload = () => { iframe.style.opacity = '1'; };
+              iframe.src = iframe.dataset.youtubeSrc;
+            } else {
+              // Clear the handler first — removeAttribute('src') navigates
+              // the iframe to about:blank, which itself fires 'load'; the
+              // stale handler from opening would otherwise re-fire and
+              // snap opacity back to 1 right after this sets it to 0.
+              iframe.onload = null;
+              iframe.removeAttribute('src');
+              iframe.style.opacity = '0';
+            }
           }
         }
 
