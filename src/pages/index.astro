@@ -331,12 +331,13 @@ const localBusinessSchema = {
       const fwList = document.querySelector('[data-fw-list]');
       const BURST_HOLD_DUR = 160; // flat full-static hold before the wipe-off starts
       const BURST_OVERLAY_OPACITY = 0.13;
-      // At least 2x faster than the previous pass on every variant.
+      // Back to vertical (was briefly horizontal, reverted per feedback) —
+      // durations kept at the faster 2x+ pace.
       const WIPE_VARIANTS = [
-        { name: 'right-a', duration: 90 },
-        { name: 'left-a', duration: 90 },
-        { name: 'right-b', duration: 120 },
-        { name: 'left-b', duration: 65 },
+        { name: 'down-a', duration: 90 },
+        { name: 'up-a', duration: 90 },
+        { name: 'down-b', duration: 120 },
+        { name: 'up-b', duration: 65 },
       ];
       const SHAKE_CLASSES = ['fw-v-js-soft', 'fw-v-js-med', 'fw-v-js'];
 
@@ -484,23 +485,23 @@ const localBusinessSchema = {
         mix-blend-mode: screen;
       }
       /* Wipe-off, instead of the static just vanishing: clip-path sweeps
-         the visible region off to the right or off to the left. Four
-         variants — two directions at two different speeds each — picked
-         at random per trigger (JS sets --wipe-duration and the data-wipe
-         attribute). */
+         the visible region down to nothing or up to nothing (back to
+         vertical, was briefly horizontal). Four variants — two directions
+         at two different speeds each — picked at random per trigger (JS
+         sets --wipe-duration and the data-wipe attribute). */
       .fw-burst-overlay { clip-path: inset(0 0 0 0); }
-      @keyframes fw-wipe-right {
+      @keyframes fw-wipe-down {
         from { clip-path: inset(0 0 0 0); }
-        to   { clip-path: inset(0 0 0 100%); }
+        to   { clip-path: inset(100% 0 0 0); }
       }
-      @keyframes fw-wipe-left {
+      @keyframes fw-wipe-up {
         from { clip-path: inset(0 0 0 0); }
-        to   { clip-path: inset(0 100% 0 0); }
+        to   { clip-path: inset(0 0 100% 0); }
       }
-      .fw-burst-overlay[data-wipe='right-a'] { animation: fw-wipe-right var(--wipe-duration, 90ms) ease-out forwards; }
-      .fw-burst-overlay[data-wipe='left-a']  { animation: fw-wipe-left var(--wipe-duration, 90ms) ease-out forwards; }
-      .fw-burst-overlay[data-wipe='right-b'] { animation: fw-wipe-right var(--wipe-duration, 120ms) ease-in-out forwards; }
-      .fw-burst-overlay[data-wipe='left-b']  { animation: fw-wipe-left var(--wipe-duration, 65ms) ease-in forwards; }
+      .fw-burst-overlay[data-wipe='down-a'] { animation: fw-wipe-down var(--wipe-duration, 90ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='up-a']   { animation: fw-wipe-up var(--wipe-duration, 90ms) ease-out forwards; }
+      .fw-burst-overlay[data-wipe='down-b'] { animation: fw-wipe-down var(--wipe-duration, 120ms) ease-in-out forwards; }
+      .fw-burst-overlay[data-wipe='up-b']   { animation: fw-wipe-up var(--wipe-duration, 65ms) ease-in forwards; }
       @media (prefers-reduced-motion: reduce) {
         .fw-burst-overlay[data-wipe] { animation: none; }
       }
