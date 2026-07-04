@@ -7,7 +7,11 @@ import EquipmentCard from '../components/EquipmentCard.astro';
 import SEOHead from '../components/SEOHead.astro';
 import equipmentData from '../data/equipment.json';
 
-const base = import.meta.env.BASE_URL;
+// Normalized to strip a trailing slash -- BASE_URL is '/tyosound' in
+// preview (no trailing slash) but '/' at the real domain (trailing
+// slash), and every ${base}/path template below assumes the former;
+// left un-normalized, base:'/' produces broken '//path' double slashes.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const categories = [...equipmentData.categories].sort((a, b) => a.sortingOrder - b.sortingOrder);
 // Split into two independent columns (alternating) rather than a single
 // CSS grid — a grid auto-places these into shared rows, so a short card
