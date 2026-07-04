@@ -245,7 +245,13 @@ const slides = images?.map((img) => {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  .carousel-frame[data-active='true'] { opacity: 1; }
+  /* Presence-based, not [data-active='true'] — JS toggles this via
+     toggleAttribute(), which sets a newly-added attribute to an empty
+     string rather than the literal "true" the SSR markup uses for the
+     initial active slide. A value-matched selector only ever matched
+     that first slide; navigating away left every frame unmatched (and
+     with no way back), i.e. the carousel going solid black on advance. */
+  .carousel-frame[data-active] { opacity: 1; }
   .carousel-img {
     position: absolute;
     inset: 0;
@@ -298,7 +304,7 @@ const slides = images?.map((img) => {
     gap: 6px;
   }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); cursor: pointer; }
-  .dot[data-active='true'] { background: var(--white); }
+  .dot[data-active] { background: var(--white); }
   .carousel-credit {
     position: absolute;
     bottom: 8px;
