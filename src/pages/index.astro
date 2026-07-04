@@ -136,6 +136,9 @@ const localBusinessSchema = {
               role={p.role}
               cat={p.cat}
               youtubeId={p.youtubeId}
+              startSeconds={p.startSeconds}
+              images={p.images?.map((img) => `${base}${img}`)}
+              credit={p.credit}
             />
           ))}
         </div>
