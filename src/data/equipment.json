@@ -60,7 +60,7 @@
       "name": "Utility Wireless", "slug": "ifb-receivers", "sortingOrder": 70,
       "items": [
         { "name": "Sound Devices A10 Rack Mount Distribution", "price": 150, "qty": 1 },
-        { "name": "DADM226 Digitally Tuned Diversity Antenna Distribution", "price": 100, "qty": 1 },
+        { "name": "DADM226 Antenna Distribution", "price": 100, "qty": 1 },
         { "name": "Eartec Hub Intercom System", "price": 100, "qty": 5 },
         { "name": "Bumblebee Sidekick 3 IEM", "price": 75, "qty": 3 },
         { "name": "Zaxcom RX200 Receiver", "price": 75, "qty": 2 },
@@ -75,11 +75,11 @@
     {
       "name": "Sound Reinforcement", "slug": "sound-reinforcement", "sortingOrder": 80,
       "items": [
-        { "name": "Yamaha DMD3", "price": 100, "qty": 1 },
+        { "name": "Yamaha DM3", "price": 100, "qty": 1 },
+        { "name": "Allen and Heath DT168", "price": 100, "qty": 1 },
         { "name": "QSC K12.2", "price": 100, "qty": 2 },
         { "name": "QSC K9.2", "price": 75, "qty": 1 },
-        { "name": "Allen and Heath DT168", "price": 100, "qty": 1 },
-        { "name": "AKG C414 XLII", "price": 50, "qty": 2 },
+        { "name": "AKG C414 XLII", "price": 50, "qty": 3 },
         { "name": "SE Electronics V7X", "price": 25, "qty": 3 },
         { "name": "SE Electronics V7", "price": 25, "qty": 3 },
         { "name": "Shure Beta 58A", "price": 25, "qty": 3 },
