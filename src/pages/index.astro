@@ -125,7 +125,16 @@ const localBusinessSchema = {
 
     <!-- FEATURED WORK -->
     <section class="featured-work" id="featured-work">
-      <canvas class="fw-static" data-tv-static aria-hidden="true"></canvas>
+      {/* Hosted, looped noise clip instead of a JS-drawn canvas — hardware
+          video decode runs off the main thread entirely, unlike the
+          per-pixel JS loop this replaced. True random noise loops
+          seamlessly (every frame is already uncorrelated with its
+          neighbors) and compresses poorly, so this is deliberately small
+          (320x200, 12fps, 2s) — still looks clean at the low opacity/
+          object-fit:cover scale it's shown at. */}
+      <video class="fw-static" data-tv-static-video autoplay muted loop playsinline aria-hidden="true">
+        <source src={`${base}/video/fw-static.mp4`} type="video/mp4" />
+      </video>
       <div class="fw-burst-overlay" data-tv-burst-overlay aria-hidden="true">
         <canvas class="fw-burst-canvas" data-tv-burst></canvas>
       </div>
@@ -241,12 +250,6 @@ const localBusinessSchema = {
             // by the media box's aspect-ratio, so it's never blocked on
             // the iframe actually finishing its network load.
             expand.style.height = open ? expand.scrollHeight + 'px' : '0px';
-            // Free the main thread from the background noise canvas's
-            // per-pixel repaint for the duration of the height transition
-            // (480ms, --dur-slow) so it isn't competing for frame time.
-            window.pauseBgStatic?.();
-            clearTimeout(window._bgStaticResumeTimer);
-            window._bgStaticResumeTimer = setTimeout(() => window.resumeBgStatic?.(), 480);
           }
           if (iframe) {
             if (open) {
@@ -318,17 +321,16 @@ const localBusinessSchema = {
       // Shared static-noise painter — draws random grayscale noise into a
       // canvas every frame via a manual per-pixel JS loop (not GPU work),
       // so its cost is directly proportional to the pixel buffer's area.
-      // The buffer is capped at maxDim on its longest side *regardless of
-      // viewport size or devicePixelRatio* — retina crispness buys nothing
-      // for uncorrelated random noise, but a buffer that grows with the
-      // window (previously scaled to real CSS size × up to 2x DPR) made
-      // this dramatically more expensive on large/maximized windows, which
-      // ate into the frame budget for everything else on the page (this is
-      // what was behind "everything is smoother in a small window"). The
-      // canvas's CSS box still fills the section; the browser just
-      // upscales the small buffer to fit, same as a low-res video texture.
-      // Used both for the continuous low-opacity background behind
-      // Featured Work and for the short burst on a service-filter change.
+      // The continuous background behind Featured Work now uses a hosted
+      // looped video instead (see the <video data-tv-static-video> markup
+      // and the reduced-motion handling below) — hardware video decode
+      // runs off the main thread entirely, which a JS canvas loop never
+      // can. This function is kept only for the short, one-off noise burst
+      // on a service-filter change, where spinning up a canvas for a few
+      // hundred milliseconds is simpler than a second video asset. The
+      // buffer is still capped at maxDim on its longest side regardless of
+      // viewport/DPR, for the same reason as before: retina crispness buys
+      // nothing for uncorrelated random noise.
       function runStatic(canvas, opts) {
         opts = opts || {};
         const fps = opts.fps || 90;
@@ -360,28 +362,19 @@ const localBusinessSchema = {
         }
         if (opts.playing !== false) timer = setInterval(draw, 1000 / fps);
         return {
-          // pause/resume just toggle the interval, keeping the resize
-          // observer alive — used to free up the main thread during the
-          // Featured Work expand/collapse transition, which is otherwise
-          // competing with this per-pixel canvas repaint for frame time.
-          pause() { if (timer) { clearInterval(timer); timer = null; } },
-          resume() { if (!timer && opts.playing !== false) timer = setInterval(draw, 1000 / fps); },
           stop() { if (timer) clearInterval(timer); if (ro) ro.disconnect(); },
         };
       }
 
       const reduceMotionStatic = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // Continuous background static — one still frame when reduced motion
-      // is preferred (playing: false skips the interval but resize()+draw()
-      // still run once), otherwise a slow ~11fps loop at low opacity.
-      // Exposed on window (pause/resume) so the row expand/collapse handler
-      // above can free the main thread during its transition.
-      const bgCanvas = document.querySelector('[data-tv-static]');
-      if (bgCanvas instanceof HTMLCanvasElement) {
-        const bgStatic = runStatic(bgCanvas, { fps: 11, playing: !reduceMotionStatic });
-        window.pauseBgStatic = () => bgStatic.pause();
-        window.resumeBgStatic = () => bgStatic.resume();
+      // The background noise video autoplays by default (markup); for
+      // reduced-motion visitors, pause it on whatever frame it loads to —
+      // any single frame of random noise is as good as any other, so there
+      // is no "correct" frame to seek to first.
+      const staticVideo = document.querySelector('[data-tv-static-video]');
+      if (staticVideo instanceof HTMLVideoElement && reduceMotionStatic) {
+        staticVideo.pause();
       }
 
       // Channel-change burst: a quick real noise burst (screen-blended so
@@ -515,18 +508,19 @@ const localBusinessSchema = {
       .featured-work { position: relative; background: var(--bg-muted); padding: var(--section-gap-home) 0; overflow: hidden; }
       .featured-work > .content { position: relative; z-index: 1; }
       /* Analog-TV static behind the section — a new stylistic addition (the
-         real site has no video here, just a flat gray layer), built as a
-         canvas redrawn with random noise rather than a video file, so
-         there's no asset to source or host. Smooth (non-pixelated) scaling
-         keeps the grain fine rather than blocky. Kept low-opacity so text
-         stays legible; a static (non-animating) frame is drawn when the
-         visitor prefers reduced motion. */
+         real site has no video here, just a flat gray layer). A hosted,
+         looped noise clip rather than a JS canvas — object-fit: cover
+         crops the fixed 320x200 source to fill the box, same as it would
+         a photo; harmless for uniform noise. Kept low-opacity so text
+         stays legible; paused entirely when the visitor prefers reduced
+         motion (JS below), leaving one still frame. */
       .fw-static {
         position: absolute;
         inset: 0;
         z-index: 0;
         width: 100%;
         height: 100%;
+        object-fit: cover;
         opacity: 0.06;
         pointer-events: none;
       }
