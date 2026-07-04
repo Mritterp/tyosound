@@ -45,12 +45,25 @@ const slides = images?.map((img) => {
   <div class="expand">
     <div class="media">
       {youtubeId && (
-        <iframe
-          title={title}
-          data-youtube-src={youtubeSrc}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
+        <>
+          {/* YouTube's own thumbnail (always available at this URL, no API
+              key needed) — shown immediately on expand while the iframe is
+              still booting up, instead of a plain black box. The iframe
+              fades in over it once loaded, same as before. */}
+          <img
+            class="video-poster"
+            src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+          />
+          <iframe
+            title={title}
+            data-youtube-src={youtubeSrc}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </>
       )}
       {slides && slides.length > 0 && (
         <div class="carousel" data-carousel data-fit={imageFit}>
@@ -235,6 +248,13 @@ const slides = images?.map((img) => {
     border: none;
     opacity: 0;
     transition: opacity 0.3s ease;
+  }
+  .video-poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* Image carousel — same media box, an alternative to the video iframe. */
