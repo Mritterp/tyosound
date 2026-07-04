@@ -37,15 +37,20 @@
         { "name": "Shure Beta 91A", "price": 50, "qty": 1 },
         { "name": "Spekco MHL5S", "price": 50, "qty": 1 },
         { "name": "Sanken CUB-01", "price": 50, "qty": 1 },
-        { "name": "Azden SGM PDII", "price": 25, "qty": 3 }
+        { "name": "Azden SGM PDII", "price": 25, "qty": 3 },
+        { "name": "Lectrosonics Block 19 SRB", "price": 50, "qty": 3 },
+        { "name": "Shure UL4", "price": 50, "qty": 8 }
       ]
     },
     {
       "name": "Talent Wireless", "slug": "wireless-transmitters", "sortingOrder": 50,
       "items": [
-        { "name": "Lectrosonics A Band SRC + 2 SMDWB Combo", "price": 150, "qty": 2 },
-        { "name": "Lectrosonics Block 19 SRB + 2 SMQV Combo", "price": 150, "qty": 2 },
-        { "name": "Lectrosonics Block 20 411 + SMQV Combo", "price": 75, "qty": 1 }
+        { "name": "Lectrosonics Block 19 SRB", "price": 75, "qty": 2 },
+        { "name": "Lectrosonics A Band SRC", "price": 75, "qty": 3 },
+        { "name": "Lectrosonics Block 20 411", "price": 75, "qty": 2 },
+        { "name": "Lectrosonics A Band SMDWB", "price": 75, "qty": 4 },
+        { "name": "Lectrosonics Block 19 SMQV", "price": 75, "qty": 4 },
+        { "name": "Lectrosonics Block 20 SMQV", "price": 75, "qty": 4 }
       ]
     },
     {
