@@ -332,7 +332,7 @@ const localBusinessSchema = {
       function runStatic(canvas, opts) {
         opts = opts || {};
         const fps = opts.fps || 90;
-        const maxDim = opts.maxDim || 220;
+        const maxDim = opts.maxDim || 400;
         const ctx = canvas.getContext('2d');
         let w = 0, h = 0, timer = null, ro = null;
         function resize() {
