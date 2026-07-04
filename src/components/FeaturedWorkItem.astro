@@ -11,19 +11,23 @@ interface Props {
   cat: string;
   youtubeId?: string;
   startSeconds?: number; // optional YouTube start-time offset
-  // image carousel — alternative media type to youtubeId. A plain string
-  // uses the gallery-wide `credit` fallback; an object can override it
-  // per-slide (credit: null explicitly suppresses the fallback, e.g. for
-  // a design render mixed in with real credited photos).
+  vimeoId?: string; // alternative video source to youtubeId
+  vimeoHash?: string; // required for Vimeo's unlisted/private-link videos (the segment after the id in vimeo.com/<id>/<hash>)
+  // image carousel — alternative media type to youtubeId/vimeoId. A plain
+  // string uses the gallery-wide `credit` fallback; an object can override
+  // it per-slide (credit: null explicitly suppresses the fallback, e.g.
+  // for a design render mixed in with real credited photos).
   images?: (string | { src: string; credit?: string | null })[];
   credit?: string; // fallback photo credit line for slides that don't override it
   imageFit?: 'cover' | 'contain'; // 'contain' letterboxes portrait/odd-aspect images with a blurred backdrop instead of cropping
   open?: boolean;
 }
-const { id, title, client, role, cat, youtubeId, startSeconds, images, credit, imageFit = 'cover', open = false } = Astro.props;
+const { id, title, client, role, cat, youtubeId, startSeconds, vimeoId, vimeoHash, images, credit, imageFit = 'cover', open = false } = Astro.props;
 const youtubeSrc = youtubeId
   ? `https://www.youtube-nocookie.com/embed/${youtubeId}${startSeconds ? `?start=${startSeconds}` : ''}`
   : undefined;
+const vimeoSrc = vimeoId ? `https://player.vimeo.com/video/${vimeoId}${vimeoHash ? `?h=${vimeoHash}` : ''}` : undefined;
+const videoSrc = youtubeSrc || vimeoSrc;
 const slides = images?.map((img) => {
   if (typeof img === 'string') return { src: img, credit: credit || '' };
   const c = img.credit === null ? '' : (img.credit ?? credit ?? '');
@@ -44,22 +48,26 @@ const slides = images?.map((img) => {
 
   <div class="expand">
     <div class="media">
-      {youtubeId && (
+      {videoSrc && (
         <>
-          {/* YouTube's own thumbnail (always available at this URL, no API
-              key needed) — shown immediately on expand while the iframe is
-              still booting up, instead of a plain black box. The iframe
-              fades in over it once loaded, same as before. */}
-          <img
-            class="video-poster"
-            src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-          />
+          {youtubeId && (
+            /* YouTube's own thumbnail (always available at this URL, no API
+               key needed) — shown immediately on expand while the iframe is
+               still booting up, instead of a plain black box. The iframe
+               fades in over it once loaded, same as before. No equivalent
+               poster for Vimeo (would need an oEmbed call, out of scope for
+               a single video) — those fall back to the plain black box. */
+            <img
+              class="video-poster"
+              src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+            />
+          )}
           <iframe
             title={title}
-            data-youtube-src={youtubeSrc}
+            data-video-src={videoSrc}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
           ></iframe>

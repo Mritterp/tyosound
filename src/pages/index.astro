@@ -153,6 +153,8 @@ const localBusinessSchema = {
               cat={p.cat}
               youtubeId={p.youtubeId}
               startSeconds={p.startSeconds}
+              vimeoId={p.vimeoId}
+              vimeoHash={p.vimeoHash}
               images={p.images?.map((img) =>
                 typeof img === 'string' ? `${base}${img}` : { ...img, src: `${base}${img.src}` }
               )}
@@ -240,7 +242,7 @@ const localBusinessSchema = {
         function setOpen(row, open) {
           row.setAttribute('data-open', String(open));
           const expand = row.querySelector('.expand');
-          const iframe = row.querySelector('iframe[data-youtube-src]');
+          const iframe = row.querySelector('iframe[data-video-src]');
           const btn = row.querySelector('[data-work-toggle]');
           if (btn) btn.setAttribute('aria-expanded', String(open));
           if (expand) {
@@ -255,7 +257,7 @@ const localBusinessSchema = {
             if (open) {
               iframe.style.opacity = '0';
               iframe.onload = () => { iframe.style.opacity = '1'; };
-              iframe.src = iframe.dataset.youtubeSrc;
+              iframe.src = iframe.dataset.videoSrc;
             } else {
               // Clear the handler first — removeAttribute('src') navigates
               // the iframe to about:blank, which itself fires 'load'; the
