@@ -279,7 +279,7 @@ const localBusinessSchema = {
               // Wait for the expand transition (--dur-slow, 480ms) so the
               // scroll target accounts for the row's final expanded height.
               setTimeout(() => {
-                r.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
+                r.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
               }, 500);
             }
           });
