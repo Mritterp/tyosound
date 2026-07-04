@@ -19,7 +19,7 @@
     { "id": "will-i-ever-be-satisfied", "title": "Will I Ever Be Satisfied", "client": "Wallflower Wanderer x Cristina Vane", "role": "Production and Post", "cat": "post", "sortingOrder": 70, "youtubeId": "M4YF1wTTUQQ" },
 
     { "id": "live-event-placeholder", "title": "Live Event Whatever", "client": "ELM x Client", "cat": "events", "sortingOrder": 0, "images": ["/img/placeholder-carousel.svg"] },
-    { "id": "the-walkway", "title": "The Walkaway - Interactive Public Art Exhibit", "client": "Marshall Moya Design x DC Vision Zero Campaign", "role": "Audio Post", "cat": "events", "sortingOrder": 10, "images": [
+    { "id": "the-walkway", "title": "The Walkway - Interactive Public Art Exhibit", "client": "Marshall Moya Design x DC Vision Zero Campaign", "role": "Audio Post", "cat": "events", "sortingOrder": 10, "images": [
       { "src": "/img/events/walkway-render.png", "credit": null },
       { "src": "/img/events/walkway-1.jpg", "credit": "John Keith Photography" },
       { "src": "/img/events/walkway-2.jpg", "credit": "Mikaela Lefrak + WAMU" },
