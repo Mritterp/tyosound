@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mritterp.github.io/tyosound/sitemap-index.xml
+Sitemap: https://tyosound.com/sitemap-index.xml
