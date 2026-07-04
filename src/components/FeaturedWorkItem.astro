@@ -11,14 +11,24 @@ interface Props {
   cat: string;
   youtubeId?: string;
   startSeconds?: number; // optional YouTube start-time offset
-  images?: string[]; // image carousel — alternative media type to youtubeId
-  credit?: string; // optional photo credit line, shown on the carousel
+  // image carousel — alternative media type to youtubeId. A plain string
+  // uses the gallery-wide `credit` fallback; an object can override it
+  // per-slide (credit: null explicitly suppresses the fallback, e.g. for
+  // a design render mixed in with real credited photos).
+  images?: (string | { src: string; credit?: string | null })[];
+  credit?: string; // fallback photo credit line for slides that don't override it
+  imageFit?: 'cover' | 'contain'; // 'contain' letterboxes portrait/odd-aspect images with a blurred backdrop instead of cropping
   open?: boolean;
 }
-const { id, title, client, role, cat, youtubeId, startSeconds, images, credit, open = false } = Astro.props;
+const { id, title, client, role, cat, youtubeId, startSeconds, images, credit, imageFit = 'cover', open = false } = Astro.props;
 const youtubeSrc = youtubeId
   ? `https://www.youtube-nocookie.com/embed/${youtubeId}${startSeconds ? `?start=${startSeconds}` : ''}`
   : undefined;
+const slides = images?.map((img) => {
+  if (typeof img === 'string') return { src: img, credit: credit || '' };
+  const c = img.credit === null ? '' : (img.credit ?? credit ?? '');
+  return { src: img.src, credit: c };
+});
 ---
 
 <div class="row" data-work-item data-id={id} data-cat={cat} data-open={open}>
@@ -42,21 +52,24 @@ const youtubeSrc = youtubeId
           allowfullscreen
         ></iframe>
       )}
-      {images && images.length > 0 && (
-        <div class="carousel" data-carousel>
-          {images.map((src, i) => (
-            <img src={src} alt={title} data-carousel-slide data-active={i === 0 ? 'true' : undefined} loading="lazy" />
+      {slides && slides.length > 0 && (
+        <div class="carousel" data-carousel data-fit={imageFit}>
+          {slides.map((slide, i) => (
+            <div class="carousel-frame" data-carousel-slide data-active={i === 0 ? 'true' : undefined} data-credit={slide.credit}>
+              {imageFit === 'contain' && <img src={slide.src} alt="" aria-hidden="true" class="carousel-bloom" loading="lazy" />}
+              <img src={slide.src} alt={title} class="carousel-img" loading="lazy" />
+            </div>
           ))}
-          {images.length > 1 && (
+          {slides.length > 1 && (
             <>
               <button class="carousel-nav carousel-prev" data-carousel-prev type="button" aria-label="Previous image">‹</button>
               <button class="carousel-nav carousel-next" data-carousel-next type="button" aria-label="Next image">›</button>
               <div class="carousel-dots">
-                {images.map((_, i) => <span class="dot" data-dot data-active={i === 0 ? 'true' : undefined}></span>)}
+                {slides.map((_, i) => <span class="dot" data-dot data-active={i === 0 ? 'true' : undefined} role="button" tabindex="0" aria-label={`Go to image ${i + 1}`}></span>)}
               </div>
             </>
           )}
-          {credit && <span class="carousel-credit">{credit}</span>}
+          <span class="carousel-credit" data-carousel-credit>{slides[0]?.credit}</span>
         </div>
       )}
     </div>
@@ -71,14 +84,22 @@ const youtubeSrc = youtubeId
     const dots = [...carousel.querySelectorAll('[data-dot]')];
     const prevBtn = carousel.querySelector('[data-carousel-prev]');
     const nextBtn = carousel.querySelector('[data-carousel-next]');
+    const creditEl = carousel.querySelector('[data-carousel-credit]');
     let index = 0;
     function show(i) {
       index = (i + slides.length) % slides.length;
       slides.forEach((s, si) => s.toggleAttribute('data-active', si === index));
       dots.forEach((d, di) => d.toggleAttribute('data-active', di === index));
+      if (creditEl) {
+        const text = slides[index]?.dataset.credit || '';
+        creditEl.textContent = text;
+        creditEl.style.display = text ? '' : 'none';
+      }
     }
-    prevBtn?.addEventListener('click', () => show(index - 1));
-    nextBtn?.addEventListener('click', () => show(index + 1));
+    prevBtn?.addEventListener('click', (e) => { e.preventDefault(); show(index - 1); });
+    nextBtn?.addEventListener('click', (e) => { e.preventDefault(); show(index + 1); });
+    dots.forEach((d, di) => d.addEventListener('click', () => show(di)));
+    show(0);
   });
 </script>
 
@@ -218,16 +239,35 @@ const youtubeSrc = youtubeId
 
   /* Image carousel — same media box, an alternative to the video iframe. */
   .carousel { position: absolute; inset: 0; }
-  .carousel img {
+  .carousel-frame {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .carousel-frame[data-active='true'] { opacity: 1; }
+  .carousel-img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0;
-    transition: opacity 0.3s ease;
   }
-  .carousel img[data-active='true'] { opacity: 1; }
+  /* imageFit="contain" — for portrait/odd-aspect sources (e.g. a vertical
+     poster) that would otherwise be cropped by cover. The sharp image is
+     letterboxed (contain), and a blurred, oversized copy of the same image
+     fills the rest of the horizontal frame as a soft glow/bloom backdrop
+     instead of plain black bars. */
+  .carousel[data-fit='contain'] .carousel-img { object-fit: contain; }
+  .carousel-bloom {
+    position: absolute;
+    inset: -10%;
+    width: 120%;
+    height: 120%;
+    object-fit: cover;
+    filter: blur(50px) saturate(1.6) brightness(1.1);
+    transform: scale(1.15);
+  }
   .carousel-nav {
     position: absolute;
     top: 50%;
@@ -257,7 +297,7 @@ const youtubeSrc = youtubeId
     display: flex;
     gap: 6px;
   }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); cursor: pointer; }
   .dot[data-active='true'] { background: var(--white); }
   .carousel-credit {
     position: absolute;

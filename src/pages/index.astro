@@ -137,8 +137,11 @@ const localBusinessSchema = {
               cat={p.cat}
               youtubeId={p.youtubeId}
               startSeconds={p.startSeconds}
-              images={p.images?.map((img) => `${base}${img}`)}
+              images={p.images?.map((img) =>
+                typeof img === 'string' ? `${base}${img}` : { ...img, src: `${base}${img.src}` }
+              )}
               credit={p.credit}
+              imageFit={p.imageFit}
             />
           ))}
         </div>
