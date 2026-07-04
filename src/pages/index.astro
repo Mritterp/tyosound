@@ -231,6 +231,12 @@ const localBusinessSchema = {
             // by the media box's aspect-ratio, so it's never blocked on
             // the iframe actually finishing its network load.
             expand.style.height = open ? expand.scrollHeight + 'px' : '0px';
+            // Free the main thread from the background noise canvas's
+            // per-pixel repaint for the duration of the height transition
+            // (480ms, --dur-slow) so it isn't competing for frame time.
+            window.pauseBgStatic?.();
+            clearTimeout(window._bgStaticResumeTimer);
+            window._bgStaticResumeTimer = setTimeout(() => window.resumeBgStatic?.(), 480);
           }
           if (iframe) {
             if (open) {
@@ -333,7 +339,15 @@ const localBusinessSchema = {
           ro.observe(canvas);
         }
         if (opts.playing !== false) timer = setInterval(draw, 1000 / fps);
-        return function stop() { if (timer) clearInterval(timer); if (ro) ro.disconnect(); };
+        return {
+          // pause/resume just toggle the interval, keeping the resize
+          // observer alive — used to free up the main thread during the
+          // Featured Work expand/collapse transition, which is otherwise
+          // competing with this per-pixel canvas repaint for frame time.
+          pause() { if (timer) { clearInterval(timer); timer = null; } },
+          resume() { if (!timer && opts.playing !== false) timer = setInterval(draw, 1000 / fps); },
+          stop() { if (timer) clearInterval(timer); if (ro) ro.disconnect(); },
+        };
       }
 
       const reduceMotionStatic = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -341,9 +355,13 @@ const localBusinessSchema = {
       // Continuous background static — one still frame when reduced motion
       // is preferred (playing: false skips the interval but resize()+draw()
       // still run once), otherwise a slow ~11fps loop at low opacity.
+      // Exposed on window (pause/resume) so the row expand/collapse handler
+      // above can free the main thread during its transition.
       const bgCanvas = document.querySelector('[data-tv-static]');
       if (bgCanvas instanceof HTMLCanvasElement) {
-        runStatic(bgCanvas, { fps: 11, playing: !reduceMotionStatic });
+        const bgStatic = runStatic(bgCanvas, { fps: 11, playing: !reduceMotionStatic });
+        window.pauseBgStatic = () => bgStatic.pause();
+        window.resumeBgStatic = () => bgStatic.resume();
       }
 
       // Channel-change burst: a quick real noise burst (screen-blended so
@@ -381,7 +399,7 @@ const localBusinessSchema = {
         SHAKE_CLASSES.forEach((c) => fwList.classList.remove(c));
         void fwList.offsetWidth; // restart the animations if still mid-run
         fwList.classList.add(shakeClass);
-        const stopBurst = runStatic(burstCanvas, { fps: 60, playing: true });
+        const burst = runStatic(burstCanvas, { fps: 60, playing: true });
 
         setTimeout(() => {
           // Wipe-off starts: the CSS animation for this variant name
@@ -395,7 +413,7 @@ const localBusinessSchema = {
           burstOverlay.removeAttribute('data-wipe');
           burstCanvas.style.opacity = '0';
           fwList.classList.remove(shakeClass);
-          stopBurst();
+          burst.stop();
         }, BURST_HOLD_DUR + variant.duration);
       };
     </script>
@@ -556,6 +574,11 @@ const localBusinessSchema = {
         50%  { transform: translateX(0.5px); }
         100% { transform: translateX(0); filter: none; }
       }
+      /* Scopes layout recalculation to the list itself when a row's height
+         changes, rather than forcing the browser to re-layout everything
+         below it on the page (Recent Posts, footer, etc.) on every frame
+         of the expand/collapse transition. */
+      [data-fw-list] { contain: layout; }
       [data-fw-list].fw-v-js {
         animation: fwJs 0.3s ease-out both;
         will-change: transform, filter;
