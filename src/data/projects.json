@@ -1,7 +1,7 @@
 {
   "_note": "Content and ordering directed by the client (2026-07-03), not sourced from the original Webflow CMS beyond the original 9 production/post entries. One remaining flagged gap: Wild One / Will I Ever Be Satisfied weren't mentioned in the new Audio Post list — assumed kept, appended after the new entries; easy to reorder/remove if that's wrong.",
   "projects": [
-    { "id": "deaf-u", "title": "Deaf U", "client": "Netflix", "role": "PSM Department Head", "cat": "production", "sortingOrder": 0, "youtubeId": "hr3wwPh5uKs" },
+    { "id": "deaf-u", "title": "Deaf U", "client": "Netflix", "role": "Production Sound Department Head", "cat": "production", "sortingOrder": 0, "youtubeId": "hr3wwPh5uKs" },
     { "id": "patis-mexican-table", "title": "Pati's Mexican Table", "client": "PBS", "role": "Lead Production Sound Mixer", "cat": "production", "sortingOrder": 10, "youtubeId": "x5YpCKOufMo" },
     { "id": "steady-in-the-hand", "title": "Steady in the Hand", "client": "Wallflower Wanderer x Hannah Frances", "role": "Production and Post", "cat": "production", "sortingOrder": 20, "youtubeId": "suTzzvJkZLg" },
     { "id": "paradise-papers", "title": "Paradise Papers", "client": "VICE", "role": "Lead Production Sound Mixer", "cat": "production", "sortingOrder": 30, "youtubeId": "r8mdNahdo4M" },
