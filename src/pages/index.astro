@@ -130,7 +130,7 @@ const localBusinessSchema = {
           per-pixel JS loop this replaced. True random noise loops
           seamlessly (every frame is already uncorrelated with its
           neighbors) and compresses poorly, so this is deliberately small
-          (640x400, 12fps, 2s, ~840KB) — still looks clean at the low
+          (1280x800, 12fps, 2s, ~3.4MB) — still looks clean at the low
           opacity/object-fit:cover scale it's shown at. */}
       <video class="fw-static" data-tv-static-video autoplay muted loop playsinline aria-hidden="true">
         <source src={`${base}/video/fw-static.mp4`} type="video/mp4" />
@@ -510,7 +510,7 @@ const localBusinessSchema = {
       /* Analog-TV static behind the section — a new stylistic addition (the
          real site has no video here, just a flat gray layer). A hosted,
          looped noise clip rather than a JS canvas — object-fit: cover
-         crops the fixed 640x400 source to fill the box, same as it would
+         crops the fixed 1280x800 source to fill the box, same as it would
          a photo; harmless for uniform noise. Kept low-opacity so text
          stays legible; paused entirely when the visitor prefers reduced
          motion (JS below), leaving one still frame. */
