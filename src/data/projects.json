@@ -1,5 +1,5 @@
 {
-  "_note": "Content and ordering directed by the client (2026-07-03), not sourced from the original Webflow CMS beyond the original 9 production/post entries. One remaining flagged gap: Wild One / Will I Ever Be Satisfied weren't mentioned in the new Audio Post list — assumed kept, appended after the new entries; easy to reorder/remove if that's wrong.",
+  "_note": "Content and ordering directed by the client (2026-07-03). One remaining flagged gap: Will I Ever Be Satisfied wasn't mentioned in the client's Audio Post list update — assumed kept, appended after the new entries; easy to reorder/remove if that's wrong. (Wild One had the same flag but was removed per client request 2026-07-04.)",
   "projects": [
     { "id": "deaf-u", "title": "Deaf U", "client": "Netflix", "role": "Production Sound Department Head", "cat": "production", "sortingOrder": 0, "youtubeId": "hr3wwPh5uKs" },
     { "id": "patis-mexican-table", "title": "Pati's Mexican Table", "client": "PBS", "role": "Lead Production Sound Mixer", "cat": "production", "sortingOrder": 10, "youtubeId": "x5YpCKOufMo" },
