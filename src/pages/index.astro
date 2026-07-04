@@ -77,6 +77,13 @@ const localBusinessSchema = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <SEOHead title="TYO Sound — Production + Events Audio Engineering" description={description} ogImage={`${base}/img/hero-dc-capitol.png`} />
+    <!-- Featured Work's YouTube embeds/poster thumbnails don't load until a
+         row is clicked, so the DNS/TLS handshake to these origins would
+         otherwise start at the same instant as the expand animation,
+         competing with it for the connection. Preconnecting on page load
+         gets that out of the way early. -->
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+    <link rel="preconnect" href="https://i.ytimg.com" />
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
   </head>
   <body>
