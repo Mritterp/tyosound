@@ -271,13 +271,21 @@ const localBusinessSchema = {
         }
 
         const servicesSection = document.getElementById('services');
+        const featuredWorkSection = document.getElementById('featured-work');
         cols.forEach((c) => {
           const selectBtn = c.querySelector('.col-select');
           selectBtn?.addEventListener('click', () => {
             applyFilter(c.dataset.cat);
             // Bring What We Do to the top of the viewport so all three
-            // columns are fully visible regardless of scroll position.
-            servicesSection?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+            // columns are fully visible regardless of scroll position --
+            // except on narrow viewports, where the columns stack into one
+            // tall column (see .service-cols @ max-width: 760px) and doing
+            // that would still leave Featured Work below the fold. There,
+            // scroll straight to Featured Work instead. Checked live (not
+            // cached at load) so this tracks the browser being resized.
+            const isNarrow = window.matchMedia('(max-width: 760px)').matches;
+            const target = isNarrow ? featuredWorkSection : servicesSection;
+            target?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
           });
         });
 

@@ -33,8 +33,7 @@ const hrefFor = (label: string) =>
   <div class="nav-right">
     <a href="#" aria-label="Instagram" class="ig-link"><Icon name="instagram" size={22} /></a>
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false" data-nav-toggle>
-      <Icon name="menu" size={24} class="icon-menu" />
-      <Icon name="x" size={24} class="icon-close" />
+      <Icon name="menu" size={24} />
     </button>
   </div>
 
@@ -79,7 +78,18 @@ const hrefFor = (label: string) =>
   .waveform i:nth-child(4) { height: 12px; }
   .waveform i:nth-child(5) { height: 18px; }
 
-  .nav-desktop { display: flex; gap: var(--space-6); }
+  /* Absolutely centered on the header bar itself, rather than flex
+     space-between's "centered in whatever room is left between the
+     brand and the icon/toggle" -- brand and nav-right are different
+     widths, so space-between alone visibly off-centers this. */
+  .nav-desktop {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    gap: var(--space-6);
+  }
   .nav-link {
     color: inherit;
     text-decoration: none;
@@ -100,9 +110,6 @@ const hrefFor = (label: string) =>
   .ig-link:hover { opacity: var(--hover-opacity); }
 
   .nav-toggle { display: none; background: none; border: none; color: inherit; cursor: pointer; padding: 0; }
-  .icon-close { display: none; }
-  .nav[data-menu-open='true'] .icon-menu { display: none; }
-  .nav[data-menu-open='true'] .icon-close { display: block; }
 
   .nav-mobile {
     display: none;
