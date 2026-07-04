@@ -22,7 +22,7 @@
       "name": "Dialogue Microphones", "slug": "microphones", "sortingOrder": 30,
       "items": [
         { "name": "Schoeps MiniCMIT", "price": 100, "qty": 1 },
-        { "name": "Schoeps CMC6U + MK41", "price": 100, "qty": 1 },
+        { "name": "Schoeps CMC6U + MK41", "price": 100, "qty": 2 },
         { "name": "EV RE50B", "price": 75, "qty": 2 },
         { "name": "Sanken CS-1E", "price": 75, "qty": 1 },
         { "name": "Sennheiser MKH 416", "price": 75, "qty": 1 },
@@ -50,7 +50,7 @@
         { "name": "Lectrosonics Block 20 411", "price": 75, "qty": 2 },
         { "name": "Lectrosonics A Band SMDWB", "price": 75, "qty": 4 },
         { "name": "Lectrosonics Block 19 SMQV", "price": 75, "qty": 4 },
-        { "name": "Lectrosonics Block 20 SMQV", "price": 75, "qty": 4 }
+        { "name": "Lectrosonics Block 20 SMQV", "price": 75, "qty": 1 }
       ]
     },
     {
