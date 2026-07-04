@@ -4,14 +4,17 @@
 // wordmark + locations, phone, email, Instagram.
 //
 // FORM BACKEND: static GitHub Pages can't receive POSTed form data itself,
-// so this posts to Formspree (free tier, no server to run/maintain). The
-// endpoint below is a PLACEHOLDER — create a free form at https://formspree.io
-// (using matt@tyosound.com) and replace FORMSPREE_ENDPOINT with the real
-// "https://formspree.io/f/xxxxxxx" URL it gives you. Until then the form UI
-// works but submissions won't be delivered anywhere.
+// so this posts to Formspree (free tier, no server to run/maintain), using
+// matt@tyosound.com's real form (client-created 2026-07-04). Submitted via
+// plain fetch() below rather than Formspree's own @formspree/ajax package —
+// this site has no client-side framework runtime (Astro ships vanilla JS),
+// and the handler already does exactly what that package would (POST with
+// Accept: application/json to get a JSON reply instead of a redirect, then
+// drive this component's own button/status states) without adding a
+// dependency for it.
 import Icon from './Icon.astro';
 
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/REPLACE_ME';
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqevwrya';
 
 interface Props {
   phone?: string;
