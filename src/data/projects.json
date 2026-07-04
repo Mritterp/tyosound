@@ -18,7 +18,6 @@
     { "id": "warning-take-only-as-directed", "title": "Warning Take Only as Directed", "client": "Chiet Productions", "role": "Audio Post", "cat": "post", "sortingOrder": 50, "youtubeId": "nvxqrZwcJn4" },
     { "id": "will-i-ever-be-satisfied", "title": "Will I Ever Be Satisfied", "client": "Wallflower Wanderer x Cristina Vane", "role": "Production and Post", "cat": "post", "sortingOrder": 70, "youtubeId": "M4YF1wTTUQQ" },
 
-    { "id": "live-event-placeholder", "title": "Live Event Whatever", "client": "ELM x Client", "cat": "events", "sortingOrder": 0, "images": ["/img/placeholder-carousel.svg"] },
     { "id": "the-walkway", "title": "The Walkway - Interactive Public Art Exhibit", "client": "Marshall Moya Design x DC Vision Zero Campaign", "role": "Audio Post", "cat": "events", "sortingOrder": 10, "images": [
       { "src": "/img/events/walkway-render.png", "credit": null },
       { "src": "/img/events/walkway-1.jpg", "credit": "John Keith Photography" },
@@ -27,7 +26,6 @@
       { "src": "/img/events/walkway-4.jpg", "credit": "Mikaela Lefrak + WAMU" }
     ] },
     { "id": "marshfield-investors-day", "title": "Marshfield Investors Day", "client": "Real Pictures x Marshfield Associates", "cat": "events", "sortingOrder": 20, "vimeoId": "1097006978", "vimeoHash": "dc52f3f3da" },
-    { "id": "capitals-draft", "title": "Washington Capitals Draft", "client": "Monumental Sports x NHL", "cat": "events", "sortingOrder": 30, "images": ["/img/events/capitals-draft-1.jpg", "/img/events/capitals-draft-2.jpg", "/img/events/capitals-draft-3.jpg"] },
-    { "id": "carefirst-connect", "title": "CareFirst Connect", "client": "Carefirst x Black Oak Visuals", "cat": "events", "sortingOrder": 40, "images": ["/img/placeholder-carousel.svg"] }
+    { "id": "capitals-draft", "title": "Washington Capitals Draft", "client": "Monumental Sports x NHL", "cat": "events", "sortingOrder": 30, "images": ["/img/events/capitals-draft-1.jpg", "/img/events/capitals-draft-2.jpg", "/img/events/capitals-draft-3.jpg"] }
   ]
 }

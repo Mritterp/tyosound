@@ -6,7 +6,7 @@
 interface Props {
   title: string;
   description: string;
-  ogImage?: string; // absolute path under BASE_URL, e.g. `${base}/img/hero-dc-capitol.png`
+  ogImage?: string; // absolute path under BASE_URL, e.g. `${base}/img/hero-dc-capitol.jpg`
 }
 const { title, description, ogImage } = Astro.props;
 const base = import.meta.env.BASE_URL;
