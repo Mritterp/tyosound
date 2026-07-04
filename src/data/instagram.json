@@ -4,6 +4,7 @@
   "posts": [
     { "image": "/img/work-interview.png", "alt": "On-set interview setup" },
     { "image": "/img/insta-1.png", "alt": "Location sound recording setup" },
-    { "image": "/img/insta-2.png", "alt": "On-location production still" }
+    { "image": "/img/insta-2.png", "alt": "On-location production still" },
+    { "image": "/img/insta-3.jpg", "alt": "Modular synth setup" }
   ]
 }
