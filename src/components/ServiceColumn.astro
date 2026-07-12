@@ -39,7 +39,12 @@ const { index, title, body, cat, selected = false, linkLabel, linkHref } = Astro
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    padding: var(--space-5) 0;
+    /* padding-bottom: 0 -- the section's own padding-bottom (matching its
+       padding-top) already provides the space below the columns; adding a
+       second bottom padding here on top of that (as the old symmetric
+       `padding: space-5 0` did) stacked two spacers below the content but
+       only one above it, making the bottom gap read visibly larger. */
+    padding: var(--space-5) 0 0;
     border-top: var(--border-rule) solid var(--border-inverse);
     opacity: 0.5;
     transition: opacity var(--dur-base) var(--ease-standard), border-color var(--dur-base);
@@ -112,8 +117,13 @@ const { index, title, body, cat, selected = false, linkLabel, linkHref } = Astro
     opacity: 1;
     transform: translateY(0);
   }
+  /* visibility (not display:none) -- keeps this column's height equal to
+     its siblings' even when selected; display:none would drop its
+     reserved space and shrink the whole grid row, since CSS Grid
+     stretches all three columns to match the tallest one's natural
+     height (see Audio Post's longer body text, the usual tallest). */
   .col[data-selected='true'] .cue {
-    display: none;
+    visibility: hidden;
   }
   .cue-text {
     display: inline-block;
