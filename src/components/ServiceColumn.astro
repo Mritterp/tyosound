@@ -18,8 +18,13 @@ interface Props {
   selected?: boolean;
   linkLabel?: string;
   linkHref?: string;
+  // false on pages where selecting a card doesn't actually filter/scroll
+  // to anything below it (e.g. the Events landing page's cosmetic-only
+  // offering cards) -- the cue's copy ("See this work ↓") promises a
+  // behavior that only the home page's What We Do section actually has.
+  showCue?: boolean;
 }
-const { index, title, body, cat, selected = false, linkLabel, linkHref } = Astro.props;
+const { index, title, body, cat, selected = false, linkLabel, linkHref, showCue = true } = Astro.props;
 ---
 
 <div class="col" data-service-col data-cat={cat} data-selected={selected}>
@@ -27,7 +32,7 @@ const { index, title, body, cat, selected = false, linkLabel, linkHref } = Astro
     <span class="idx">{String(index).padStart(2, '0')}</span>
     <span class="title">{title}</span>
     <span class="body">{body}</span>
-    <span class="cue" aria-hidden="true"><span class="cue-text">See this work ↓</span></span>
+    {showCue && <span class="cue" aria-hidden="true"><span class="cue-text">See this work ↓</span></span>}
   </button>
   {linkLabel && linkHref && (
     <TextLink href={linkHref} onLight={false} class="col-link">{linkLabel}</TextLink>
