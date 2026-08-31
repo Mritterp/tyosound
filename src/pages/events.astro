@@ -130,10 +130,9 @@ const description = 'Live event audio and video production from TYO Sound — so
     <!-- CTA -->
     <section class="cta">
       <div class="content cta-inner">
-        <Eyebrow muted>Ready when you are</Eyebrow>
+        <Eyebrow onLight={false} muted>Ready when you are</Eyebrow>
         <h2 class="section-title">Let's Talk About Your Event</h2>
         <p class="cta-body">Tell us what you're planning and we'll put together the right sound and video setup for it.</p>
-        <Button href="#contact" variant="solid">Book a call</Button>
       </div>
     </section>
 
@@ -275,15 +274,25 @@ const description = 'Live event audio and video production from TYO Sound — so
       .featured-work { background: var(--bg-muted); padding: var(--section-pad-y) 0; }
       .fw-header { margin-bottom: var(--space-5); }
 
-      /* CTA */
-      .cta { background: var(--white); padding: var(--section-pad-y) 0; }
-      .cta-inner { text-align: center; display: flex; flex-direction: column; align-items: center; }
+      /* CTA -- shares the footer's dark background and left alignment with
+         no padding-bottom of its own, so the two flow as one unbroken
+         section (the footer's own padding-top supplies the gap above
+         "Let's Chat") instead of reading as two separate blocks. */
+      .cta { background: var(--bg-inverse); padding: var(--section-pad-y) 0 0; }
+      .cta-inner { color: var(--white); }
       .cta-body {
         max-width: 46ch;
-        margin: var(--space-5) 0 var(--space-7);
+        margin: var(--space-5) 0 0;
         font-size: var(--text-lg);
-        color: var(--text-muted);
+        color: rgba(255, 255, 255, 0.7);
       }
+
+      /* FOOTER (this page only) -- SiteFooter is shared across every page,
+         so this is a scoped override rather than an edit to the component
+         itself. Dropping the "Let's Chat" heading lets the form sit flush
+         with the top of the grid row, level with the TYO Sound column
+         beside it, instead of starting lower than it. */
+      :global(.footer .heading) { display: none; }
 
       @media (max-width: 640px) {
         .hero-ctas { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
