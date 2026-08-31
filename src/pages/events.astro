@@ -159,6 +159,7 @@ const description = 'Live event audio and video production from TYO Sound — so
       // Events rows, so there's nothing to filter).
       const listWrap = document.querySelector('[data-fw-list]');
       if (listWrap) {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const rows = [...listWrap.querySelectorAll('[data-work-item]')];
 
         function setOpen(row, open) {
@@ -189,6 +190,13 @@ const description = 'Live event audio and video production from TYO Sound — so
             const isOpen = r.dataset.open === 'true';
             rows.forEach((other) => other !== r && setOpen(other, false));
             setOpen(r, !isOpen);
+            if (!isOpen) {
+              // Wait for the expand transition (--dur-slow, 480ms) so the
+              // scroll target accounts for the row's final expanded height.
+              setTimeout(() => {
+                r.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+              }, 500);
+            }
           });
         });
       }
