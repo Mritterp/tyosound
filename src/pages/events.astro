@@ -5,9 +5,9 @@
 // components/tokens as the rest of the site rather than one-off styling,
 // so it stays visually consistent with the home/equipment pages.
 //
-// NOT linked from NavHeader yet -- that's a shared component every page
-// renders, so adding an "Events"/"Work" link there is a site-wide change
-// beyond just adding this one page. Ask before wiring it in.
+// Linked from the shared NavHeader as "Live Events" (added at the client's
+// request, after originally being kept out of the nav as a standalone
+// landing page).
 import '../styles/styles.css';
 import NavHeader from '../components/NavHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -16,6 +16,7 @@ import Button from '../components/Button.astro';
 import TextLink from '../components/TextLink.astro';
 import ServiceColumn from '../components/ServiceColumn.astro';
 import FeaturedWorkItem from '../components/FeaturedWorkItem.astro';
+import TrustBar from '../components/TrustBar.astro';
 import SEOHead from '../components/SEOHead.astro';
 import projectsData from '../data/projects.json';
 
@@ -55,6 +56,19 @@ const offerings = [
   },
 ];
 
+// Clients for the scrolling strip, in the client's order. Blue Cross Blue
+// Shield and CareFirst have no src: no usable logo file was available, so
+// TrustBar shows their names as type-set wordmarks until real logo files
+// are supplied (add `src: `${base}/img/logos/<file>`` to swap one in).
+const eventClients = [
+  { name: 'Blue Cross Blue Shield' },
+  { name: 'Spotify', src: `${base}/img/logos/spotify.svg`, scale: 1.15 },
+  { name: 'Monumental Sports', src: `${base}/img/logos/monumental-sports.png`, scale: 2 },
+  { name: 'More Perfect Union', src: `${base}/img/logos/more-perfect-union.svg`, scale: 1.4 },
+  { name: 'CareFirst' },
+  { name: 'Stand Together', src: `${base}/img/logos/stand-together.webp`, scale: 2.3 },
+];
+
 const description = 'Live event audio and video production from TYO Sound — sound reinforcement, broadcast, and streaming for panels, conferences, and performances in Washington, D.C. and Baltimore.';
 ---
 
@@ -73,14 +87,14 @@ const description = 'Live event audio and video production from TYO Sound — so
     <section class="hero" id="main">
       <img class="hero-photo" src={`${base}/img/hero-dc-capitol.jpg`} alt="Washington, D.C. streetscape near the U.S. Capitol" />
       <div class="hero-scrim"></div>
-      <div class="hero-header"><NavHeader theme="onPhoto" active="Services" /></div>
+      <div class="hero-header"><NavHeader theme="onPhoto" active="Live Events" /></div>
       <div class="hero-content">
         <Eyebrow onLight={false} class="hero-eyebrow">Washington D.C. + Baltimore</Eyebrow>
-        <h1 class="hero-title">Live Event<br />Audio + Video</h1>
+        <h1 class="hero-title">Live Events</h1>
         <p class="hero-body">Sound reinforcement and multi-cam recording for panels, conferences, and performances.</p>
         <div class="hero-ctas">
-          <Button href="#contact" variant="solid" onLight={false}>Book a call</Button>
-          <TextLink href="#featured-work" onLight={false}>See past events</TextLink>
+          <Button href="#services" variant="solid" onLight={false}>See past events</Button>
+          <TextLink href="#contact" onLight={false}>Book a call</TextLink>
         </div>
       </div>
     </section>
@@ -88,7 +102,7 @@ const description = 'Live event audio and video production from TYO Sound — so
     <!-- WHAT WE OFFER -->
     <section class="offerings" id="services">
       <div class="content">
-        <h2 class="section-title">What we offer</h2>
+        <Eyebrow onLight={false} muted>What we do</Eyebrow>
         <div class="offering-cols" data-evt-cards>
           {offerings.map((o) => (
             <ServiceColumn index={o.index} title={o.title} body={o.body} cat={o.cat} selected={o.index === 1} showCue={false} />
@@ -116,6 +130,7 @@ const description = 'Live event audio and video production from TYO Sound — so
               startSeconds={p.startSeconds}
               vimeoId={p.vimeoId}
               vimeoHash={p.vimeoHash}
+              jwId={p.jwId}
               images={p.images?.map((img) =>
                 typeof img === 'string' ? `${base}${img}` : { ...img, src: `${base}${img.src}` }
               )}
@@ -124,6 +139,13 @@ const description = 'Live event audio and video production from TYO Sound — so
             />
           ))}
         </div>
+      </div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section class="clients">
+      <div class="content">
+        <TrustBar label="Clients Include" onLight={true} clients={eventClients} copies={4} duration={20} eager />
       </div>
     </section>
 
@@ -267,7 +289,10 @@ const description = 'Live event audio and video production from TYO Sound — so
       }
 
       /* WHAT WE OFFER */
-      .offerings { background: var(--bg-inverse); color: var(--white); padding: var(--section-pad-y) 0; }
+      /* Matches the home page's What We Do section: small muted label above
+         the cards, and the same tighter top/bottom padding (that page uses
+         clamp(32px, 4vw, 64px) rather than the larger --section-pad-y). */
+      .offerings { background: var(--bg-inverse); color: var(--white); padding: clamp(32px, 4vw, 64px) 0; }
       .offering-cols {
         margin-top: var(--space-6);
         display: grid;
@@ -281,6 +306,11 @@ const description = 'Live event audio and video production from TYO Sound — so
       /* FEATURED WORK */
       .featured-work { background: var(--bg-muted); padding: var(--section-pad-y) 0; }
       .fw-header { margin-bottom: var(--space-5); }
+
+      /* CLIENTS -- white so it separates the gray Featured Work above from
+         the dark CTA/footer below; tighter padding than the big sections
+         since it's a single-line strip. */
+      .clients { background: var(--white); padding: var(--space-8) 0; }
 
       /* CTA -- shares the footer's dark background and left alignment with
          no padding-bottom of its own, so the two flow as one unbroken

@@ -9,7 +9,9 @@
 // the growing client list all fits without wrapping or shrinking.
 interface Client {
   name: string;
-  src: string;
+  // Omit src to show the name as a type-set wordmark instead — a stand-in
+  // for clients we don't have a usable logo file for yet.
+  src?: string;
   // some marks (e.g. a near-square icon vs. a wide wordmark) read better
   // a bit larger/smaller at a shared row height — per-logo scale nudge.
   scale?: number;
@@ -26,6 +28,18 @@ interface Props {
   clients?: Client[];
   onLight?: boolean;
   label?: string;
+  // How many times the list is repeated end to end. The loop shifts by one
+  // list-width, so (copies - 1) list-widths must cover the widest screen or
+  // the right edge shows empty space mid-scroll. 2 is plenty for the long
+  // home-page list; a short list needs more.
+  copies?: number;
+  // Seconds per loop — scale with list width to keep a steady pace.
+  duration?: number;
+  // Load logos immediately instead of lazily. A not-yet-loaded lazy image
+  // has zero width, so the loop distance (which depends on every copy's
+  // real width) is wrong until they all load — fine for the long home-page
+  // list, but a short repeated list should just load up front.
+  eager?: boolean;
 }
 // Normalized to strip a trailing slash -- BASE_URL is '/tyosound' in
 // preview (no trailing slash) but '/' at the real domain (trailing
@@ -58,23 +72,39 @@ const {
   ],
   onLight = false,
   label,
+  copies = 2,
+  duration = 50,
+  eager = false,
 } = Astro.props;
+// Every copy after the first is decorative: hidden from screen readers (so
+// names aren't read repeatedly) and dropped entirely under reduced motion,
+// where the track stops scrolling and just shows the list once.
+const items = Array.from({ length: copies }, (_, copy) => clients.map((c) => ({ c, dup: copy > 0 }))).flat();
 ---
 
 <div class="trust" data-on-light={onLight}>
   {label && <div class="label">{label}</div>}
   <div class="carousel">
-    <div class="carousel-track">
-      {[...clients, ...clients].map((c) => (
-        <img
-          class="client-logo"
-          data-bitonal={c.bitonal ? 'true' : undefined}
-          src={c.src}
-          alt={c.name}
-          loading="lazy"
-          style={c.scale ? `--scale: ${c.scale}` : undefined}
-        />
-      ))}
+    <div class="carousel-track" style={`--copies: ${copies}; --duration: ${duration}s`}>
+      {items.map(({ c, dup }) =>
+        c.src ? (
+          <img
+            class:list={['client-logo', { dup }]}
+            data-bitonal={c.bitonal ? 'true' : undefined}
+            src={c.src}
+            alt={dup ? '' : c.name}
+            aria-hidden={dup ? 'true' : undefined}
+            loading={eager ? 'eager' : 'lazy'}
+            style={c.scale ? `--scale: ${c.scale}` : undefined}
+          />
+        ) : (
+          <span
+            class:list={['client-word', { dup }]}
+            aria-hidden={dup ? 'true' : undefined}
+            style={c.scale ? `--scale: ${c.scale}` : undefined}
+          >{c.name}</span>
+        )
+      )}
     </div>
   </div>
 </div>
@@ -96,28 +126,37 @@ const {
     mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
   }
+  /* Spacing is a margin on each item rather than a flex gap: a gap only
+     goes *between* items, so the track would be one gap short of
+     (copies x list-width) and the loop would jump by that remainder each
+     cycle. With a margin per item, one list-width is exactly 1/copies of
+     the track. */
   .carousel-track {
     display: flex;
     align-items: center;
-    gap: var(--space-8);
     width: max-content;
-    animation: trust-scroll 50s linear infinite;
+    animation: trust-scroll var(--duration, 50s) linear infinite;
   }
   .carousel:hover .carousel-track { animation-play-state: paused; }
   @keyframes trust-scroll {
     from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+    to { transform: translateX(calc(-100% / var(--copies, 2))); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .carousel-track { animation: none; flex-wrap: wrap; width: 100%; }
+    .carousel-track { animation: none; flex-wrap: wrap; width: 100%; row-gap: var(--space-5); }
+    .dup { display: none; }
   }
 
-  .client-logo {
+  .client-logo,
+  .client-word {
     --scale: 1;
     flex: none;
+    margin-right: var(--space-8);
+    opacity: 0.85;
+  }
+  .client-logo {
     height: calc(26px * var(--scale));
     width: auto;
-    opacity: 0.85;
     /* Forces pure white regardless of the source logo's real colors. */
     filter: brightness(0) invert(1);
   }
@@ -125,6 +164,19 @@ const {
     /* Forces pure black instead, for use on a light background. */
     filter: brightness(0);
   }
+  /* Type-set stand-in for a client with no logo file — bold uppercase in
+     the site's own face, sized to sit visually alongside the logo marks. */
+  .client-word {
+    font-family: var(--font-sans);
+    font-weight: var(--weight-bold);
+    font-size: calc(22px * var(--scale));
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--white);
+  }
+  .trust[data-on-light='true'] .client-word { color: var(--black); }
   /* Genuinely two-tone source logos: swap polarity instead of crushing to
      one color, so internal contrast (e.g. ABC's letters) survives. */
   .client-logo[data-bitonal='true'] {
