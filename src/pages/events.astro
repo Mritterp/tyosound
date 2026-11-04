@@ -56,16 +56,16 @@ const offerings = [
   },
 ];
 
-// Clients for the scrolling strip, in the client's order. Blue Cross Blue
-// Shield and CareFirst have no src: no usable logo file was available, so
-// TrustBar shows their names as type-set wordmarks until real logo files
-// are supplied (add `src: `${base}/img/logos/<file>`` to swap one in).
+// Clients for the scrolling strip, in the client's order. carefirst.png and
+// bcbs.png were cropped from a single client-supplied image holding both
+// logos. (A client entry with no `src` renders as a type-set name instead —
+// TrustBar's fallback for a client without a logo file.)
 const eventClients = [
-  { name: 'Blue Cross Blue Shield' },
+  { name: 'Blue Cross Blue Shield', src: `${base}/img/logos/bcbs.png`, scale: 1.5 },
   { name: 'Spotify', src: `${base}/img/logos/spotify.svg`, scale: 1.15 },
   { name: 'Monumental Sports', src: `${base}/img/logos/monumental-sports.png`, scale: 2 },
   { name: 'More Perfect Union', src: `${base}/img/logos/more-perfect-union.svg`, scale: 1.4 },
-  { name: 'CareFirst' },
+  { name: 'CareFirst', src: `${base}/img/logos/carefirst.png`, scale: 1.2 },
   { name: 'Stand Together', src: `${base}/img/logos/stand-together.webp`, scale: 2.3 },
 ];
 
@@ -145,7 +145,7 @@ const description = 'Live event audio and video production from TYO Sound — so
     <!-- CLIENTS -->
     <section class="clients">
       <div class="content">
-        <TrustBar label="Clients Include" onLight={true} clients={eventClients} copies={4} duration={20} eager />
+        <TrustBar label="Clients Include" onLight={true} clients={eventClients} copies={4} duration={17} eager />
       </div>
     </section>
 
