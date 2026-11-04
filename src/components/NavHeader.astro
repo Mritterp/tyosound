@@ -9,17 +9,25 @@ interface Props {
   theme?: 'onPhoto' | 'light';
   active?: string;
 }
-const { theme = 'onPhoto', active = 'Services' } = Astro.props;
+const { theme = 'onPhoto', active = 'Production' } = Astro.props;
 // "Work" was dropped — the hero's own "See featured work" CTA already
 // covers that job, so it was redundant in the nav.
-const links = ['Services', 'Equipment', 'Contact'];
+// "Production" replaced "Services" and goes to the top of the home page
+// (no #anchor, so it doesn't auto-scroll down to What We Do); "Live Events"
+// links to the dedicated /events landing page.
+const links = ['Production', 'Live Events', 'Equipment', 'Contact'];
 // Normalized to strip a trailing slash -- BASE_URL is '/tyosound' in
 // preview (no trailing slash) but '/' at the real domain (trailing
 // slash), and every ${base}/path template below assumes the former;
 // left un-normalized, base:'/' produces broken '//path' double slashes.
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const hrefFor = (label: string) =>
-  label === 'Equipment' ? `${base}/equipment` : `${base}/#${label.toLowerCase()}`;
+const hrefs: Record<string, string> = {
+  Production: `${base}/`,
+  'Live Events': `${base}/events`,
+  Equipment: `${base}/equipment`,
+  Contact: `${base}/#contact`,
+};
+const hrefFor = (label: string) => hrefs[label];
 ---
 
 <header class="nav" data-theme={theme}>
@@ -108,8 +116,14 @@ const hrefFor = (label: string) =>
     transform: translate(-50%, -50%);
     display: flex;
     gap: var(--space-6);
+    /* left:50% leaves this box only half the bar's width to shrink-to-fit
+       into, so a longer label like "Live Events" wrapped onto two lines
+       before it ever hit the logo. Size to content instead; the
+       breakpoint below is what keeps it clear of the logo. */
+    width: max-content;
   }
   .nav-link {
+    white-space: nowrap;
     color: inherit;
     text-decoration: none;
     font-weight: var(--weight-medium);
@@ -146,7 +160,10 @@ const hrefFor = (label: string) =>
   .nav[data-theme='light'] .nav-mobile-link { color: var(--black); }
   .nav[data-theme='onPhoto'] .nav-mobile-link { color: var(--white); }
 
-  @media (max-width: 760px) {
+  /* 860, not the original 760: with four links (Production / Live Events /
+     Equipment / Contact) centered on the bar, the link group is ~464px
+     wide and needs ~860px of bar to keep ~30px clear of the logo. */
+  @media (max-width: 860px) {
     .nav-desktop { display: none; }
     .nav-toggle { display: inline-flex; }
   }

@@ -85,6 +85,7 @@ const localBusinessSchema = {
          gets that out of the way early. -->
     <link rel="preconnect" href="https://www.youtube-nocookie.com" />
     <link rel="preconnect" href="https://i.ytimg.com" />
+    <link rel="preconnect" href="https://cdn.jwplayer.com" />
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
   </head>
   <body>
@@ -93,7 +94,7 @@ const localBusinessSchema = {
     <section class="hero" id="main">
       <img class="hero-photo" src={`${base}/img/hero-dc-capitol.jpg`} alt="Washington, D.C. streetscape near the U.S. Capitol" />
       <div class="hero-scrim"></div>
-      <div class="hero-header"><NavHeader theme="onPhoto" active="Services" /></div>
+      <div class="hero-header"><NavHeader theme="onPhoto" active="Production" /></div>
       <div class="hero-content">
         <Eyebrow onLight={false} class="hero-eyebrow">Washington D.C. Based</Eyebrow>
         <h1 class="hero-title">Production + Events<br />Audio Engineering</h1>
@@ -156,6 +157,7 @@ const localBusinessSchema = {
               startSeconds={p.startSeconds}
               vimeoId={p.vimeoId}
               vimeoHash={p.vimeoHash}
+              jwId={p.jwId}
               images={p.images?.map((img) =>
                 typeof img === 'string' ? `${base}${img}` : { ...img, src: `${base}${img.src}` }
               )}

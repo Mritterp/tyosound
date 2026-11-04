@@ -13,6 +13,7 @@ interface Props {
   startSeconds?: number; // optional YouTube start-time offset
   vimeoId?: string; // alternative video source to youtubeId
   vimeoHash?: string; // required for Vimeo's unlisted/private-link videos (the segment after the id in vimeo.com/<id>/<hash>)
+  jwId?: string; // JW Player media ID (e.g. Outside TV episodes) — alternative to youtubeId/vimeoId; uses JW's hosted embed page
   // image carousel — alternative media type to youtubeId/vimeoId. A plain
   // string uses the gallery-wide `credit` fallback; an object can override
   // it per-slide (credit: null explicitly suppresses the fallback, e.g.
@@ -22,12 +23,13 @@ interface Props {
   imageFit?: 'cover' | 'contain'; // 'contain' letterboxes portrait/odd-aspect images with a blurred backdrop instead of cropping
   open?: boolean;
 }
-const { id, title, client, role, cat, youtubeId, startSeconds, vimeoId, vimeoHash, images, credit, imageFit = 'cover', open = false } = Astro.props;
+const { id, title, client, role, cat, youtubeId, startSeconds, vimeoId, vimeoHash, jwId, images, credit, imageFit = 'cover', open = false } = Astro.props;
 const youtubeSrc = youtubeId
   ? `https://www.youtube-nocookie.com/embed/${youtubeId}${startSeconds ? `?start=${startSeconds}` : ''}`
   : undefined;
 const vimeoSrc = vimeoId ? `https://player.vimeo.com/video/${vimeoId}${vimeoHash ? `?h=${vimeoHash}` : ''}` : undefined;
-const videoSrc = youtubeSrc || vimeoSrc;
+const jwSrc = jwId ? `https://cdn.jwplayer.com/players/${jwId}.html` : undefined;
+const videoSrc = youtubeSrc || vimeoSrc || jwSrc;
 const slides = images?.map((img) => {
   if (typeof img === 'string') return { src: img, credit: credit || '' };
   const c = img.credit === null ? '' : (img.credit ?? credit ?? '');
@@ -60,6 +62,17 @@ const slides = images?.map((img) => {
             <img
               class="video-poster"
               src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+            />
+          )}
+          {jwId && (
+            /* JW Player serves a public poster per media ID — shown while
+               the (large) player page loads, same role as the YouTube one. */
+            <img
+              class="video-poster"
+              src={`https://cdn.jwplayer.com/v2/media/${jwId}/poster.jpg?width=1280`}
               alt=""
               aria-hidden="true"
               loading="lazy"
